@@ -1,0 +1,107 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - EcommerceApp</title>
+    <script type="importmap"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;600;700&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/EcommerceApp.styles.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/adoptapatitas.css" />
+</head>
+
+<body>
+
+@if (ViewData["OcultarNavbar"] as bool? != true)
+{
+    <header>
+        <nav class="navbar navbar-expand-lg navbar-adoptapatitas sticky-top py-3" id="navbarPrincipal">
+            <div class="container">
+
+                <!-- Marca: patita + nombre, enlaza al catálogo -->
+                <a class="navbar-brand d-flex align-items-center gap-2" asp-controller="Mascotas" asp-action="Index">
+                    <span style="font-size:1.6rem;">🐾</span>
+                    <span>Adopta<span style="color:var(--color-secundario);">Patitas</span></span>
+                </a>
+
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarAdopta">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <div class="collapse navbar-collapse" id="navbarAdopta">
+
+                    <!-- Links centrales del tema -->
+                    <ul class="navbar-nav mx-auto gap-lg-3">
+                        <li class="nav-item">
+                            <a class="nav-link nav-link-adoptapatitas" asp-controller="Home" asp-action="Index">Inicio</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link nav-link-adoptapatitas" asp-controller="Mascotas" asp-action="Index">Mascotas</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link nav-link-adoptapatitas" asp-controller="Home" asp-action="Privacy">Cómo adoptar</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link nav-link-adoptapatitas" asp-controller="Home" asp-action="Nosotros">Nosotros</a>
+                        </li>
+                    </ul>
+
+                    <!-- Cuenta: cambia según si hay sesión iniciada -->
+                    <ul class="navbar-nav ms-auto align-items-lg-center gap-2">
+                        @if (User.Identity!.IsAuthenticated)
+                        {
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle nav-link-adoptapatitas" href="#" role="button" data-bs-toggle="dropdown">
+                                    👤 @User.Identity.Name
+                                </a>
+                                <ul class="dropdown-menu dropdown-menu-end">
+                                    @if (User.IsInRole("Zoonosis"))
+                                    {
+                                        <li><a class="dropdown-item" asp-controller="Mascotas" asp-action="Administrar">Panel de administración</a></li>
+                                    }
+                                    <li>
+                                        <form asp-controller="Account" asp-action="Logout" method="post" class="px-3">
+                                            <button type="submit" class="btn btn-sm btn-adoptapatitas-outline w-100 mt-1">Cerrar sesión</button>
+                                        </form>
+                                    </li>
+                                </ul>
+                            </li>
+                        }
+                        else
+                        {
+                            <li class="nav-item">
+                                <a class="btn btn-adoptapatitas-outline btn-sm" asp-controller="Account" asp-action="Login">Iniciar sesión</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="btn btn-adoptapatitas-primario btn-sm" asp-controller="Account" asp-action="Register">Registrarme</a>
+                            </li>
+                        }
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+}
+    <div class="container">
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+    </div>
+
+    <footer class="border-top footer text-muted">
+        <div class="container">
+            &copy; 2026 - EcommerceApp - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+        </div>
+    </footer>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

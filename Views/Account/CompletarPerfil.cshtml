@@ -1,0 +1,50 @@
+﻿@model EcommerceApp.Models.CompletarPerfilViewModel
+
+<h2>Completa tu perfil de Adoptante</h2>
+<p>Para poder solicitar la adopción de una mascota necesitamos verificar tu identidad.</p>
+
+<form asp-action="CompletarPerfil" method="post" enctype="multipart/form-data">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+    <div class="form-group mb-2">
+        <label asp-for="Apellido"></label>
+        <input asp-for="Apellido" class="form-control" />
+        <span asp-validation-for="Apellido" class="text-danger"></span>
+    </div>
+
+    <div class="form-group mb-2">
+        <label asp-for="Edad"></label>
+        <input asp-for="Edad" type="number" class="form-control" />
+        <span asp-validation-for="Edad" class="text-danger"></span>
+    </div>
+
+    <div class="form-group mb-2">
+        <label asp-for="Telefono"></label>
+        <input asp-for="Telefono" class="form-control" />
+        <span asp-validation-for="Telefono" class="text-danger"></span>
+    </div>
+
+    <div class="form-group mb-2">
+        <label asp-for="NumeroCarnet"></label>
+        <input asp-for="NumeroCarnet" class="form-control" />
+        <span asp-validation-for="NumeroCarnet" class="text-danger"></span>
+    </div>
+
+    <div class="form-group mb-2">
+        <label asp-for="FotoCarnetAnverso"></label>
+        <input asp-for="FotoCarnetAnverso" type="file" accept="image/*" class="form-control" />
+        <span asp-validation-for="FotoCarnetAnverso" class="text-danger"></span>
+    </div>
+
+    <div class="form-group mb-2">
+        <label asp-for="FotoCarnetReverso"></label>
+        <input asp-for="FotoCarnetReverso" type="file" accept="image/*" class="form-control" />
+        <span asp-validation-for="FotoCarnetReverso" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Guardar y continuar</button>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

@@ -1,0 +1,90 @@
+﻿@model EcommerceApp.Models.Mascota
+@{
+    ViewData["Title"] = Model.Nombre;
+}
+
+<div class="row g-4">
+    <div class="col-md-5">
+        <img src="@(Model.FotoUrl ?? "/images/mascota-sin-foto.png")"
+             alt="Foto de @Model.Nombre" class="img-fluid rounded-4" />
+    </div>
+    <div class="col-md-7">
+        <h2>@Model.Nombre</h2>
+
+        <!-- Todos los estados de salud como pastillas (badges) -->
+        <div class="mb-2">
+            @foreach (var estado in Model.EstadosSalud)
+            {
+                <span class="badge-estado @estado.ToLower()" style="position:static;display:inline-block;margin-right:6px;">
+                    @estado
+                </span>
+            }
+        </div>
+
+        <p class="mt-3">@Model.Descripcion</p>
+
+        <ul class="list-unstyled">
+            <li><strong>Tipo:</strong> @Model.Tipo</li>
+            <li><strong>Raza:</strong> @(Model.Raza ?? "No especificada")</li>
+            <li><strong>Color:</strong> @(Model.Color ?? "No especificado")</li>
+            <li><strong>Edad:</strong> @Model.Edad</li>
+            <li><strong>Sexo:</strong> @Model.Sexo</li>
+            <li><strong>Ubicación:</strong> @Model.Ubicacion</li>
+        </ul>
+
+        <!-- ===== Información visible para CUALQUIERA (adoptante incluido) =====
+             Son solo banderas + un resumen general, sin el detalle clínico. -->
+        @if (Model.EnTratamiento || Model.TieneEnfermedadBase || Model.RequiereCuidadosLargoPlazo)
+        {
+            <div class="p-3 mb-3" style="background-color: var(--color-menta); border-radius: 10px;">
+                <h6 class="mb-2">Información de cuidado</h6>
+                <ul class="mb-2">
+                    @if (Model.EnTratamiento)
+                    {
+                        <li>Actualmente está en tratamiento</li>
+                    }
+                    @if (Model.TieneEnfermedadBase)
+                    {
+                        <li>Tiene una enfermedad de base</li>
+                    }
+                    @if (Model.RequiereCuidadosLargoPlazo)
+                    {
+                        <li>Necesita cuidados a largo plazo / de por vida</li>
+                    }
+                </ul>
+                @if (!string.IsNullOrEmpty(Model.ResumenCuidadosAdoptante))
+                {
+                    <p class="mb-0 fst-italic">"@Model.ResumenCuidadosAdoptante"</p>
+                }
+            </div>
+        }
+
+        @if (User.Identity!.IsAuthenticated && User.IsInRole("Adoptante"))
+        {
+            <button class="btn btn-adoptapatitas-secundario">Solicitar adopción</button>
+        }
+        else if (!User.Identity!.IsAuthenticated)
+        {
+            <a asp-controller="Account" asp-action="Login" class="btn btn-adoptapatitas-secundario">
+                Inicia sesión para adoptar
+            </a>
+        }
+
+        <!-- ===== Información SOLO para Zoonosis =====
+             Nunca se renderiza este bloque si el usuario no tiene ese rol,
+             ni siquiera queda oculto en el HTML: no llega al navegador. -->
+        @if (User.IsInRole("Zoonosis"))
+        {
+            <div class="p-3 mt-3 border border-warning rounded-3">
+                <h6 class="mb-2">🔒 Información interna (solo Zoonosis)</h6>
+                <p class="mb-1"><strong>Condición en la que llegó:</strong> @(Model.CondicionLlegada ?? "No registrada")</p>
+                <p class="mb-0"><strong>Tratamiento a aplicar:</strong> @(Model.TratamientoAdministrativo ?? "No registrado")</p>
+            </div>
+
+            <div class="mt-3 d-flex gap-2">
+                <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-adoptapatitas-outline">Editar</a>
+                <a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-outline-danger">Eliminar</a>
+            </div>
+        }
+    </div>
+</div>

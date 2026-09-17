@@ -1,0 +1,757 @@
+﻿/* ============================================================
+   ADOPTAPATITAS - Hoja de estilos compartida
+   Se usa en el Login/Registro y en el catálogo de Mascotas
+   para que toda la app se vea consistente.
+   ============================================================ */
+
+/* --- Paleta de colores (variables CSS) ---
+   Definirlas una sola vez aquí permite reutilizarlas en todo
+   el sitio con var(--nombre) en lugar de repetir códigos hex. */
+:root {
+    --color-primario: #5B3A8E; /* Morado - botones principales, marca */
+    --color-secundario: #D95B91; /* Rosado - botón "Adoptar", acentos */
+    --color-rosa-claro: #F6D6E4; /* Fondos suaves, franjas decorativas */
+    --color-menta: #E8F4F0; /* Fondos alternos, tarjetas */
+    --color-crema: #FFF8F2; /* Fondo general de la página */
+    --color-blanco: #FFFFFF;
+    --color-texto: #333044; /* Texto principal, oscuro */
+    --color-verde: #72B8A2; /* Badge "Saludable" */
+}
+
+body {
+    background-color: var(--color-crema);
+    color: var(--color-texto);
+}
+
+/* --- Barra de navegación --- */
+.navbar-adoptapatitas {
+    background-color: var(--color-blanco);
+    border-bottom: 1px solid var(--color-rosa-claro);
+}
+
+    .navbar-adoptapatitas .navbar-brand {
+        color: var(--color-primario);
+        font-weight: 700;
+    }
+
+/* --- Botones reutilizables --- */
+.btn-adoptapatitas-primario {
+    background-color: var(--color-primario);
+    border-color: var(--color-primario);
+    color: var(--color-blanco);
+}
+
+    .btn-adoptapatitas-primario:hover {
+        background-color: #4a2f73; /* versión más oscura del morado al pasar el mouse */
+        color: var(--color-blanco);
+    }
+
+.btn-adoptapatitas-secundario {
+    background-color: var(--color-secundario);
+    border-color: var(--color-secundario);
+    color: var(--color-blanco);
+}
+
+    .btn-adoptapatitas-secundario:hover {
+        background-color: #c2447c;
+        color: var(--color-blanco);
+    }
+
+.btn-adoptapatitas-outline {
+    background-color: transparent;
+    border: 1px solid var(--color-primario);
+    color: var(--color-primario);
+}
+
+    .btn-adoptapatitas-outline:hover {
+        background-color: var(--color-primario);
+        color: var(--color-blanco);
+    }
+
+/* --- Banner superior del catálogo (franja rosada con el texto de bienvenida) --- */
+.banner-mascotas {
+    background-color: var(--color-rosa-claro);
+    border-radius: 12px;
+    padding: 24px;
+    margin-bottom: 24px;
+}
+
+/* --- Tarjeta de mascota (usada en Index) --- */
+.card-mascota {
+    background-color: var(--color-blanco);
+    border: 1px solid #eee;
+    border-radius: 12px;
+    overflow: hidden; /* para que la foto respete las esquinas redondeadas */
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+    .card-mascota:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+    }
+
+    .card-mascota img {
+        width: 100%;
+        aspect-ratio: 5 / 4; /* vertical: más alta que ancha */
+        height: auto;
+        object-fit: cover;
+        object-position: center 20%;
+        transition: transform 0.4s ease;
+    }
+    .card-mascota .card-body {
+        padding: 14px;
+    }
+
+/* --- Badge de estado de salud (Saludable / Vacunado / Desparasitado) ---
+   El color cambia según el texto para que se distingan de un vistazo. */
+.badge-estado {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--color-blanco);
+}
+
+    .badge-estado.saludable {
+        background-color: var(--color-verde);
+    }
+
+    .badge-estado.vacunado {
+        background-color: var(--color-primario);
+    }
+
+    .badge-estado.desparasitado {
+        background-color: var(--color-secundario);
+    }
+
+.badge-corazon {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background-color: var(--color-blanco);
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-secundario);
+}
+
+.card-mascota-imagen-wrapper {
+    position: relative; /* para que el badge y el corazón floten sobre la foto */
+}
+
+/* --- Pestañas Perros / Gatos --- */
+.tabs-tipo .nav-link {
+    color: var(--color-texto);
+    border: none;
+    border-bottom: 3px solid transparent;
+}
+
+    .tabs-tipo .nav-link.active {
+        color: var(--color-primario);
+        border-bottom: 3px solid var(--color-primario);
+        font-weight: 600;
+    }
+
+/* --- Formularios (Login, Registro, Create/Edit de Mascotas) --- */
+.form-adoptapatitas .form-control {
+    border-radius: 8px;
+    padding: 10px 12px;
+}
+
+.form-adoptapatitas label {
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: var(--color-texto);
+}
+
+/* --- Panel dividido del Login (imagen a la izquierda, formulario a la derecha) --- */
+.login-panel-imagen {
+    background-color: var(--color-rosa-claro);
+    border-radius: 16px 0 0 16px;
+    display: flex;
+    align-items: flex-end;
+    padding: 0;
+    overflow: hidden;
+}
+
+    .login-panel-imagen img {
+        width: 100%;
+        object-fit: cover;
+    }
+
+.login-panel-formulario {
+    background-color: var(--color-blanco);
+    border-radius: 0 16px 16px 0;
+    padding: 40px;
+}
+/* ============================================================
+   LOGIN - versión más grande y con fondo decorativo
+   (se agrega al final del archivo, no reemplaza nada anterior)
+   ============================================================ */
+
+/* Envuelve toda la página de login: centra verticalmente y deja
+   que las formas decorativas de fondo se vean detrás del panel. */
+.login-page-wrapper {
+    min-height: calc(100vh - 120px); /* resta aprox. el alto de la navbar/footer */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+    position: relative;
+    overflow: hidden; /* para que los círculos decorativos no generen scroll */
+}
+
+    /* Círculos difuminados de fondo (los "blobs" rosados/menta del mockup),
+   hechos solo con CSS, sin necesidad de imágenes. */
+    .login-page-wrapper::before,
+    .login-page-wrapper::after {
+        content: "";
+        position: absolute;
+        border-radius: 50%;
+        filter: blur(10px);
+        opacity: 0.5;
+        z-index: 0;
+    }
+
+    .login-page-wrapper::before {
+        width: 320px;
+        height: 320px;
+        background-color: var(--color-rosa-claro);
+        top: -80px;
+        left: -100px;
+    }
+
+    .login-page-wrapper::after {
+        width: 260px;
+        height: 260px;
+        background-color: var(--color-menta);
+        bottom: -60px;
+        right: -80px;
+    }
+
+/* El panel del login queda por encima de los círculos de fondo */
+.login-panel-imagen,
+.login-panel-formulario {
+    position: relative;
+    z-index: 1;
+}
+
+/* --- Panel más grande y con más "aire" --- */
+.login-panel-contenedor {
+    max-width: 1040px;
+    width: 100%;
+    min-height: 640px;
+    box-shadow: 0 20px 50px rgba(91, 58, 142, 0.15); /* sombra con tinte morado */
+    border-radius: 24px;
+}
+
+.login-panel-imagen {
+    border-radius: 24px 0 0 24px;
+    min-height: 640px;
+}
+
+    .login-panel-imagen img {
+        height: 100%;
+        min-height: 640px;
+    }
+
+.login-panel-formulario {
+    border-radius: 0 24px 24px 0;
+    padding: 56px 64px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+    .login-panel-formulario h2 {
+        font-size: 2.1rem;
+        font-weight: 700;
+        color: var(--color-primario);
+        margin-bottom: 6px;
+    }
+
+    .login-panel-formulario p.text-muted {
+        font-size: 1.05rem;
+        margin-bottom: 28px;
+    }
+
+    /* Inputs y botones más grandes dentro del login */
+    .login-panel-formulario .form-control {
+        padding: 12px 16px;
+        font-size: 1rem;
+        border-radius: 10px;
+        border: 1px solid #e5d9f0;
+    }
+
+        .login-panel-formulario .form-control:focus {
+            border-color: var(--color-primario);
+            box-shadow: 0 0 0 3px rgba(91, 58, 142, 0.15);
+        }
+
+    .login-panel-formulario .btn {
+        padding: 12px 16px;
+        font-size: 1rem;
+        border-radius: 10px;
+        font-weight: 600;
+    }
+
+/* En pantallas angostas (celular), la imagen se oculta (ya lo hace
+   d-none d-md-flex de Bootstrap) y el formulario ocupa todo el ancho
+   con menos padding para no verse apretado. */
+@media (max-width: 767px) {
+    .login-panel-formulario {
+        padding: 36px 28px;
+        border-radius: 24px;
+    }
+}
+/* ============================================================
+   LOGIN - v2: más centrado, más grande, con animaciones
+   (agregar al final de adoptapatitas.css, no reemplaza nada)
+   ============================================================ */
+
+/* --- Centrado real en toda la altura visible de la pantalla --- */
+.login-page-wrapper {
+    min-height: 88vh; /* antes: calc(100vh - 120px) */
+    padding: 24px 20px;
+    background: radial-gradient( circle at 50% 40%, var(--color-crema) 0%, #fdf3ec 100% );
+}
+
+/* --- Panel todavía más grande --- */
+.login-panel-contenedor {
+    max-width: 1120px; /* antes: 1040px */
+    min-height: 700px; /* antes: 640px */
+    box-shadow: 0 25px 60px rgba(91, 58, 142, 0.18);
+    /* Animación de entrada: aparece con un leve "pop" hacia arriba */
+    animation: loginEntrada 0.6s ease-out;
+}
+
+@keyframes loginEntrada {
+    from {
+        opacity: 0;
+        transform: translateY(24px) scale(0.98);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.login-panel-imagen,
+.login-panel-imagen img {
+    min-height: 700px;
+}
+
+/* --- Franja de acento morado/rosado arriba del formulario --- */
+.login-panel-formulario {
+    position: relative;
+    padding-top: 64px;
+}
+
+    .login-panel-formulario::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 6px;
+        background: linear-gradient(90deg, var(--color-primario), var(--color-secundario));
+    }
+
+    /* --- Iconito de patita flotando junto al título (puro CSS/emoji, sin imágenes) --- */
+    .login-panel-formulario h2::before {
+        content: "🐾";
+        display: inline-block;
+        margin-right: 8px;
+        animation: patitaFlotante 2.4s ease-in-out infinite;
+    }
+
+@keyframes patitaFlotante {
+    0%, 100% {
+        transform: translateY(0) rotate(-8deg);
+    }
+
+    50% {
+        transform: translateY(-4px) rotate(8deg);
+    }
+}
+
+/* --- Efecto al enfocar un input: además del glow, una leve elevación --- */
+.login-panel-formulario .form-control {
+    transition: box-shadow 0.2s ease, transform 0.2s ease, border-color 0.2s ease;
+}
+
+    .login-panel-formulario .form-control:focus {
+        transform: translateY(-1px);
+    }
+
+/* --- Botones con efecto "lift" al pasar el mouse --- */
+.login-panel-formulario .btn {
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+    .login-panel-formulario .btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 16px rgba(91, 58, 142, 0.25);
+    }
+
+.login-panel-formulario .btn-adoptapatitas-primario:hover {
+    box-shadow: 0 8px 20px rgba(91, 58, 142, 0.35);
+}
+
+/* --- El panel completo reacciona sutilmente cuando el mouse pasa cerca --- */
+.login-panel-contenedor {
+    transition: box-shadow 0.3s ease;
+}
+
+    .login-panel-contenedor:hover {
+        box-shadow: 0 30px 70px rgba(91, 58, 142, 0.22);
+    }
+/* ============================================================
+   LOGIN - v3: tipografía, botones pastilla, video de fondo
+   (agregar al final de adoptapatitas.css)
+   ============================================================ */
+
+/* --- Tipografía general del sitio ---
+   Quicksand para títulos/botones (redondeada, juguetona);
+   Poppins para texto normal (limpia, fácil de leer). */
+body {
+    font-family: 'Poppins', sans-serif;
+}
+
+h1, h2, h3, h4, h5, h6,
+.navbar-brand,
+.btn {
+    font-family: 'Quicksand', sans-serif;
+    font-weight: 600;
+}
+
+/* --- Botones tipo "pastilla" en TODA la app ---
+   border-radius alto = extremos completamente redondeados.
+   Aplica también a los botones de Google/GitHub porque todos
+   comparten la clase base .btn de Bootstrap. */
+.btn {
+    border-radius: 50px !important;
+}
+
+/* --- Centrado perfecto + video de fondo ---
+   "Full-bleed": el wrapper se estira al ancho completo del
+   navegador (sale del <div class="container"> de _Layout con
+   un margen negativo) para que el video cubra toda la pantalla,
+   sin importar el padding del layout. */
+.login-page-wrapper {
+    position: relative;
+    width: 100vw;
+    margin-left: calc(-50vw + 50%);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    padding: 20px;
+}
+
+/* Video de fondo: cubre todo el wrapper sin deformarse
+   (mismo truco que object-fit:cover pero compatible con <video>) */
+.login-bg-video {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    min-width: 100%;
+    min-height: 100%;
+    width: auto;
+    height: auto;
+    transform: translate(-50%, -50%);
+    object-fit: cover;
+    z-index: 0;
+}
+
+/* Capa semitransparente sobre el video para que el panel
+   blanco/formulario siga siendo legible encima */
+.login-bg-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(91,58,142,0.55), rgba(217,91,145,0.45));
+    z-index: 1;
+}
+
+/* El panel del login va POR ENCIMA del video y la capa */
+.login-panel-contenedor {
+    position: relative;
+    z-index: 2;
+}
+/* ============================================================
+   REGISTRO + CATÁLOGO A PANTALLA COMPLETA (v4)
+   (agregar al final de adoptapatitas.css)
+   ============================================================ */
+
+/* --- Panel único para el formulario de Registro ---
+   Reutiliza el mismo wrapper con video (.login-page-wrapper)
+   pero con una tarjeta más ancha en vez del panel dividido. */
+.registro-panel {
+    position: relative;
+    z-index: 2;
+    background-color: var(--color-blanco);
+    max-width: 760px;
+    width: 100%;
+    border-radius: 24px;
+    padding: 48px 56px;
+    box-shadow: 0 25px 60px rgba(91, 58, 142, 0.18);
+    animation: loginEntrada 0.6s ease-out; /* misma animación que ya tiene el login */
+    max-height: 90vh;
+    overflow-y: auto; /* si la pantalla es baja, este panel scrollea en vez de cortarse */
+}
+
+    .registro-panel h2 {
+        font-size: 1.9rem;
+        color: var(--color-primario);
+        margin-bottom: 4px;
+    }
+
+@media (max-width: 767px) {
+    .registro-panel {
+        padding: 32px 24px;
+    }
+}
+
+/* --- Catálogo de mascotas a ancho completo de pantalla ---
+   Mismo truco "full-bleed" que usamos en el login: se sale del
+   <div class="container"> de _Layout con un margen negativo. */
+.catalogo-full-ancho {
+    width: 100vw;
+    margin-left: calc(-50vw + 50%);
+    padding: 24px 48px;
+}
+
+@media (max-width: 767px) {
+    .catalogo-full-ancho {
+        padding: 16px 16px;
+    }
+}
+/* ============================================================
+   V5 - Fotos mejor encuadradas, más efectos, navbar con estilo
+   (agregar al final de adoptapatitas.css)
+   ============================================================ */
+
+/* --- Fotos de mascota: más grandes y mejor encuadradas ---
+   object-position "center 25%" prioriza la parte de arriba de
+   la foto (donde casi siempre está la cara del animal) en vez
+   de recortar desde el centro exacto. */
+.card-mascota img {
+    width: 100%;
+    aspect-ratio: 5 / 4; /* cuadrada */
+    height: auto;
+    object-fit: cover;
+    object-position: center 20%;
+    transition: transform 0.4s ease;
+}
+/* Efecto zoom suave al pasar el mouse sobre la tarjeta
+   (el overflow:hidden que ya tiene .card-mascota recorta el
+   zoom para que no se salga de la tarjeta) */
+.card-mascota:hover img {
+    transform: scale(1.08);
+}
+
+/* --- Animación de entrada escalonada para las tarjetas --- */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(18px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.fade-in-up {
+    animation: fadeInUp 0.5s ease both;
+}
+
+/* --- Barra de búsqueda con más presencia visual --- */
+.filtro-catalogo {
+    background-color: var(--color-blanco);
+    border-radius: 16px;
+    padding: 16px;
+    box-shadow: 0 6px 20px rgba(91, 58, 142, 0.08);
+    margin-bottom: 20px;
+}
+
+    .filtro-catalogo .form-control,
+    .filtro-catalogo .form-select {
+        border-radius: 10px;
+        border: 1px solid #eee;
+    }
+
+        .filtro-catalogo .form-control:focus,
+        .filtro-catalogo .form-select:focus {
+            border-color: var(--color-primario);
+            box-shadow: 0 0 0 3px rgba(91, 58, 142, 0.12);
+        }
+
+/* --- Pestañas Perros/Gatos con transición suave en el subrayado --- */
+.tabs-tipo .nav-link {
+    transition: color 0.2s ease, border-color 0.2s ease;
+}
+
+/* --- Banner con patitas decorativas flotando --- */
+.banner-mascotas {
+    position: relative;
+    overflow: hidden;
+}
+
+    .banner-mascotas::after {
+        content: "🐾";
+        position: absolute;
+        font-size: 4rem;
+        opacity: 0.15;
+        right: 24px;
+        top: 50%;
+        transform: translateY(-50%) rotate(-15deg);
+        animation: patitaFlotante 3s ease-in-out infinite;
+    }
+
+/* --- NAVBAR: sombra al hacer scroll + links con subrayado animado --- */
+.navbar-adoptapatitas {
+    transition: box-shadow 0.3s ease;
+}
+
+    .navbar-adoptapatitas.navbar-scrolled {
+        box-shadow: 0 4px 16px rgba(91, 58, 142, 0.12);
+    }
+
+.nav-link-adoptapatitas {
+    position: relative;
+    color: var(--color-texto) !important;
+    font-weight: 600;
+    padding-bottom: 4px !important;
+}
+
+    .nav-link-adoptapatitas::after {
+        content: "";
+        position: absolute;
+        left: 0;
+        bottom: 0;
+        width: 0%;
+        height: 2px;
+        background-color: var(--color-secundario);
+        transition: width 0.25s ease;
+    }
+
+    .nav-link-adoptapatitas:hover::after,
+    .nav-link-adoptapatitas.active::after {
+        width: 100%;
+    }
+/* ============================================================
+   V6 - Placeholder de foto, estado vacío, paginación
+   (agregar al final de adoptapatitas.css)
+   ============================================================ */
+
+/* --- Placeholder cuando la mascota no tiene foto todavía ---
+   Antes dependía de un archivo /images/mascota-sin-foto.png que
+   probablemente nunca se creó (por eso se veía el ícono de imagen
+   rota). Ahora es un div con degradado + emoji, siempre funciona. */
+.mascota-sin-foto {
+    width: 100%;
+    aspect-ratio: 3 / 4;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 3.5rem;
+    background: linear-gradient(135deg, var(--color-rosa-claro), var(--color-menta));
+}
+/* --- Estado vacío (sin resultados) --- */
+.estado-vacio {
+    background-color: var(--color-blanco);
+    border-radius: 20px;
+    padding: 60px 20px;
+    margin: 20px 0;
+}
+
+.estado-vacio-icono {
+    font-size: 3.5rem;
+    margin-bottom: 12px;
+    opacity: 0.6;
+}
+
+/* --- Paginación con el estilo de la marca (pastillas moradas) --- */
+.pagination-adoptapatitas {
+    display: flex;
+    gap: 8px;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.pagina-link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 40px;
+    height: 40px;
+    padding: 0 6px;
+    border-radius: 50px;
+    background-color: var(--color-blanco);
+    color: var(--color-texto);
+    text-decoration: none;
+    font-weight: 600;
+    border: 1px solid #eee;
+    transition: background-color 0.2s ease, color 0.2s ease, transform 0.15s ease;
+}
+
+    .pagina-link:hover {
+        background-color: var(--color-rosa-claro);
+        color: var(--color-primario);
+        transform: translateY(-2px);
+    }
+
+    .pagina-link.activa {
+        background-color: var(--color-primario);
+        color: var(--color-blanco);
+        border-color: var(--color-primario);
+    }
+
+    .pagina-link.disabled {
+        opacity: 0.4;
+        pointer-events: none;
+    }
+/* ============================================================
+   V7 - Botones de login social como íconos circulares
+   (agregar al final de adoptapatitas.css)
+   ============================================================ */
+.social-login-icons {
+    display: flex;
+    justify-content: center;
+    gap: 18px;
+    margin: 4px 0;
+}
+
+.btn-icon-social {
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    border: 1px solid #e5e5e5;
+    background-color: var(--color-blanco);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+}
+
+    .btn-icon-social svg {
+        width: 22px;
+        height: 22px;
+    }
+
+    .btn-icon-social:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 18px rgba(91, 58, 142, 0.2);
+        border-color: var(--color-primario);
+    }

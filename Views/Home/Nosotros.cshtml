@@ -1,0 +1,60 @@
+﻿@{
+    ViewData["Title"] = "Nosotros";
+}
+
+<div class="catalogo-full-ancho">
+    <div class="banner-mascotas mb-4">
+        <h2 class="mb-1">Sobre AdoptaPatitas</h2>
+        <p class="mb-0">Encuentra un amigo, cambia una vida.</p>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-md-6">
+            <div class="p-4 h-100" style="background-color: var(--color-blanco); border-radius: 16px;">
+                <h4>Nuestro objetivo</h4>
+                <p>
+                    Facilitar el proceso de adopción de mascotas, permitiendo su registro,
+                    control veterinario, seguimiento y gestión de solicitudes, a través
+                    de una plataforma web pensada para el bienestar animal.
+                </p>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="p-4 h-100" style="background-color: var(--color-blanco); border-radius: 16px;">
+                <h4>En coordinación con Zoonosis</h4>
+                <p>
+                    Trabajamos junto a Zoonosis de Cochabamba para dar seguimiento real
+                    a cada perrito y gatito: desde que ingresa al sistema, pasando por
+                    su control veterinario, hasta encontrar una familia responsable.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4 mt-1">
+        <div class="col-md-4">
+            <div class="p-4 text-center" style="background-color: var(--color-menta); border-radius: 16px;">
+                <div style="font-size:2rem;">🐾</div>
+                <h5 class="mt-2">Mascotas seguras y sanas</h5>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="p-4 text-center" style="background-color: var(--color-rosa-claro); border-radius: 16px;">
+                <div style="font-size:2rem;">💜</div>
+                <h5 class="mt-2">Apoyo después de la adopción</h5>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="p-4 text-center" style="background-color: var(--color-menta); border-radius: 16px;">
+                <div style="font-size:2rem;">🏡</div>
+                <h5 class="mt-2">Juntos por una segunda oportunidad</h5>
+            </div>
+        </div>
+    </div>
+
+    <div class="text-center mt-5">
+        <a asp-controller="Mascotas" asp-action="Index" class="btn btn-adoptapatitas-primario">
+            Ver mascotas en adopción
+        </a>
+    </div>
+</div>

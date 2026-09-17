@@ -1,0 +1,47 @@
+@model IEnumerable<EcommerceApp.Models.Dog>
+
+@{
+    ViewData["Title"] = "Mascotas en adopción";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<p>
+    @if (User.IsInRole("Admin"))
+    {
+        <a class="btn btn-primary" asp-action="Create">Crear nueva mascota</a>
+    }
+</p>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Nombre</th>
+            <th>Raza</th>
+            <th>Edad</th>
+            <th>Estado</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+    @foreach (var dog in Model)
+    {
+        <tr>
+            <td>@dog.Name</td>
+            <td>@dog.Breed</td>
+            <td>@dog.Age</td>
+            <td>@(dog.IsAdopted ? "Adoptado" : "Disponible")</td>
+            <td>
+                <a asp-action="Details" asp-route-id="@dog.Id">Ver</a>
+                @if (User.IsInRole("Admin"))
+                {
+                    <text>&nbsp;|&nbsp;</text>
+                    <a asp-action="Edit" asp-route-id="@dog.Id">Editar</a>
+                    <text>&nbsp;|&nbsp;</text>
+                    <a asp-action="Delete" asp-route-id="@dog.Id">Eliminar</a>
+                }
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>

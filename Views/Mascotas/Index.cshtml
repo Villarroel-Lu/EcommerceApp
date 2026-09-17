@@ -1,0 +1,200 @@
+﻿@model IEnumerable<EcommerceApp.Models.Mascota>
+@{
+    ViewData["Title"] = "Mascotas en adopción";
+
+    var tipoSeleccionado = ViewBag.TipoSeleccionado as EcommerceApp.Models.TipoMascota?;
+    var ordenSeleccionado = ViewBag.OrdenSeleccionado as string ?? "recientes";
+    var paginaActual = (int)(ViewBag.PaginaActual ?? 1);
+    var totalPaginas = (int)(ViewBag.TotalPaginas ?? 1);
+}
+
+<div class="catalogo-full-ancho">
+
+<!-- ===== Banner de bienvenida (franja rosada) ===== -->
+<div class="banner-mascotas d-flex justify-content-between align-items-center">
+    <div>
+        <h2 class="mb-1">¡Hay muchas patitas esperando por ti!</h2>
+        <p class="mb-0">Conoce a nuestros amigos en adopción y dale un hogar lleno de amor.</p>
+    </div>
+</div>
+
+<!-- ===== Barra de filtros + orden ===== -->
+<form method="get" asp-action="Index" class="row g-2 align-items-center mb-3 filtro-catalogo">
+    <!-- Si cambian tipo/página vía otros links, method="get" conserva
+         los filtros actuales porque van todos en la misma URL. -->
+    <input type="hidden" name="tipo" value="@tipoSeleccionado" />
+
+    <div class="col-md-4">
+        <input type="text" name="busqueda" value="@ViewBag.Busqueda"
+               class="form-control" placeholder="Buscar por nombre..." />
+    </div>
+    <div class="col-md-2">
+        <select name="sexo" class="form-select" onchange="this.form.submit()">
+            <option value="">Sexo: Todos</option>
+            <option value="Macho" selected="@(ViewBag.SexoSeleccionado?.ToString() == "Macho")">Macho</option>
+            <option value="Hembra" selected="@(ViewBag.SexoSeleccionado?.ToString() == "Hembra")">Hembra</option>
+        </select>
+    </div>
+    <div class="col-md-3">
+        <!-- Dropdown de orden, como el "Más recientes" del mockup -->
+        <select name="orden" class="form-select" onchange="this.form.submit()">
+            <option value="recientes" selected="@(ordenSeleccionado == "recientes")">Más recientes</option>
+            <option value="antiguas" selected="@(ordenSeleccionado == "antiguas")">Más antiguas</option>
+            <option value="nombre" selected="@(ordenSeleccionado == "nombre")">Nombre (A-Z)</option>
+        </select>
+    </div>
+    <div class="col-md-3">
+        <button type="submit" class="btn btn-adoptapatitas-primario w-100">Buscar</button>
+    </div>
+</form>
+
+<!-- ===== Pestañas Perros / Gatos ===== -->
+<ul class="nav tabs-tipo mb-3">
+    <li class="nav-item">
+        <a class="nav-link @(tipoSeleccionado == null ? "active" : "")"
+           asp-action="Index" asp-route-orden="@ordenSeleccionado">🐾 Todas</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link @(tipoSeleccionado == EcommerceApp.Models.TipoMascota.Perro ? "active" : "")"
+           asp-action="Index" asp-route-tipo="Perro" asp-route-orden="@ordenSeleccionado">🐶 Perros</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link @(tipoSeleccionado == EcommerceApp.Models.TipoMascota.Gato ? "active" : "")"
+           asp-action="Index" asp-route-tipo="Gato" asp-route-orden="@ordenSeleccionado">🐱 Gatos</a>
+    </li>
+</ul>
+
+<p class="text-muted">Se encontraron @ViewBag.TotalMascotas mascotas</p>
+
+@{
+    var listaMascotas = Model.ToList();
+}
+
+@if (!listaMascotas.Any())
+{
+    <!-- ===== Estado vacío (sin resultados) ===== -->
+    <div class="estado-vacio text-center">
+        <div class="estado-vacio-icono">🐾</div>
+        <h4>No encontramos mascotas con esos filtros</h4>
+        <p class="text-muted">Prueba quitando algún filtro o busca con otro nombre.</p>
+        <a asp-action="Index" class="btn btn-adoptapatitas-outline">Ver todas las mascotas</a>
+    </div>
+}
+else
+{
+    <!-- ===== Grilla de tarjetas ===== -->
+    <div class="row g-3">
+        @for (var i = 0; i < listaMascotas.Count; i++)
+        {
+            var mascota = listaMascotas[i];
+            <div class="col-6 col-md-4 col-lg-3">
+                <div class="card card-mascota h-100 fade-in-up" style="animation-delay:@(i * 0.06)s;">
+
+                    <div class="card-mascota-imagen-wrapper">
+                        @if (!string.IsNullOrEmpty(mascota.FotoUrl))
+                        {
+                            <img src="@mascota.FotoUrl" alt="Foto de @mascota.Nombre" />
+                        }
+                        else
+                        {
+                            <!-- Sin depender de un archivo de imagen que podría no
+                                 existir: un fondo degradado + patita como marcador
+                                 de posición, hecho solo con CSS. -->
+                            <div class="mascota-sin-foto">
+                                @(mascota.Tipo == EcommerceApp.Models.TipoMascota.Perro ? "🐶" : "🐱")
+                            </div>
+                        }
+
+                        @{
+                            var estadoPrincipal = mascota.EstadosSalud.FirstOrDefault() ?? "Saludable";
+                        }
+                        <span class="badge-estado @estadoPrincipal.ToLower()">
+                            @estadoPrincipal
+                        </span>
+                        <span class="badge-corazon">♥</span>
+                    </div>
+
+                    <div class="card-body">
+                        <h5 class="card-title mb-1">@mascota.Nombre</h5>
+                        <p class="mb-1 text-muted small">
+                            @(mascota.Tipo == EcommerceApp.Models.TipoMascota.Perro ? "🐶 Perro" : "🐱 Gato")
+                        </p>
+                        <p class="mb-1 small">📅 @mascota.Edad</p>
+                        <p class="mb-1 small">⚥ @mascota.Sexo</p>
+                        @if (!string.IsNullOrEmpty(mascota.Color))
+                        {
+                            <p class="mb-1 small">🎨 @mascota.Color</p>
+                        }
+                        <p class="mb-2 small">📍 @mascota.Ubicacion</p>
+
+                        @if (mascota.EstadosSalud.Count > 1)
+                        {
+                            <div class="mb-2">
+                                @foreach (var estado in mascota.EstadosSalud.Skip(1))
+                                {
+                                    <span class="badge bg-light text-dark border me-1">@estado</span>
+                                }
+                            </div>
+                        }
+
+                        @if (mascota.RequiereCuidadosLargoPlazo || mascota.TieneEnfermedadBase)
+                        {
+                            <p class="mb-2 small text-muted">💊 Requiere cuidados especiales</p>
+                        }
+
+                        <div class="d-flex gap-2">
+                            <a asp-action="Details" asp-route-id="@mascota.Id"
+                               class="btn btn-sm btn-adoptapatitas-outline flex-fill">Ver perfil</a>
+                            <a asp-action="Details" asp-route-id="@mascota.Id"
+                               class="btn btn-sm btn-adoptapatitas-secundario flex-fill">Adoptar</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+
+    <!-- ===== Paginación ===== -->
+    @if (totalPaginas > 1)
+    {
+        <nav class="mt-4 d-flex justify-content-center">
+            <ul class="pagination-adoptapatitas">
+                <li>
+                    <a class="pagina-link @(paginaActual == 1 ? "disabled" : "")"
+                       asp-action="Index"
+                       asp-route-tipo="@tipoSeleccionado" asp-route-busqueda="@ViewBag.Busqueda"
+                       asp-route-sexo="@ViewBag.SexoSeleccionado" asp-route-orden="@ordenSeleccionado"
+                       asp-route-pagina="@(paginaActual - 1)">←</a>
+                </li>
+
+                @for (var p = 1; p <= totalPaginas; p++)
+                {
+                    <li>
+                        <a class="pagina-link @(p == paginaActual ? "activa" : "")"
+                           asp-action="Index"
+                           asp-route-tipo="@tipoSeleccionado" asp-route-busqueda="@ViewBag.Busqueda"
+                           asp-route-sexo="@ViewBag.SexoSeleccionado" asp-route-orden="@ordenSeleccionado"
+                           asp-route-pagina="@p">@p</a>
+                    </li>
+                }
+
+                <li>
+                    <a class="pagina-link @(paginaActual == totalPaginas ? "disabled" : "")"
+                       asp-action="Index"
+                       asp-route-tipo="@tipoSeleccionado" asp-route-busqueda="@ViewBag.Busqueda"
+                       asp-route-sexo="@ViewBag.SexoSeleccionado" asp-route-orden="@ordenSeleccionado"
+                       asp-route-pagina="@(paginaActual + 1)">→</a>
+                </li>
+            </ul>
+        </nav>
+    }
+}
+
+@if (User.IsInRole("Zoonosis"))
+{
+    <div class="mt-4">
+        <a asp-action="Create" class="btn btn-adoptapatitas-primario">+ Registrar nueva mascota</a>
+    </div>
+}
+
+</div>

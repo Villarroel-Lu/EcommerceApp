@@ -1,0 +1,126 @@
+﻿@model EcommerceApp.Models.Mascota
+@{
+    ViewData["Title"] = "Registrar mascota";
+}
+
+<h2>Registrar nueva mascota</h2>
+
+<form asp-action="Create" method="post" enctype="multipart/form-data" class="form-adoptapatitas">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+    <div class="row g-3">
+        <div class="col-md-6">
+            <label asp-for="Nombre"></label>
+            <input asp-for="Nombre" class="form-control" />
+            <span asp-validation-for="Nombre" class="text-danger"></span>
+        </div>
+
+        <div class="col-md-6">
+            <label asp-for="Tipo"></label>
+            <select asp-for="Tipo" asp-items="Html.GetEnumSelectList<EcommerceApp.Models.TipoMascota>()" class="form-select"></select>
+        </div>
+
+        <div class="col-12">
+            <label asp-for="Descripcion"></label>
+            <textarea asp-for="Descripcion" class="form-control" rows="3"></textarea>
+            <span asp-validation-for="Descripcion" class="text-danger"></span>
+        </div>
+
+        <div class="col-md-4">
+            <label asp-for="Raza"></label>
+            <input asp-for="Raza" class="form-control" />
+        </div>
+
+        <div class="col-md-4">
+            <label asp-for="Color"></label>
+            <input asp-for="Color" class="form-control" placeholder="Ej: Café, Negro, Blanco y negro" />
+        </div>
+
+        <div class="col-md-4">
+            <label asp-for="Edad"></label>
+            <input asp-for="Edad" class="form-control" placeholder="Ej: 2 años, 6 meses" />
+            <span asp-validation-for="Edad" class="text-danger"></span>
+        </div>
+
+        <div class="col-md-6">
+            <label asp-for="Sexo"></label>
+            <select asp-for="Sexo" asp-items="Html.GetEnumSelectList<EcommerceApp.Models.SexoMascota>()" class="form-select"></select>
+        </div>
+
+        <div class="col-md-6">
+            <label asp-for="Ubicacion"></label>
+            <input asp-for="Ubicacion" class="form-control" />
+        </div>
+
+        <div class="col-12">
+            <label asp-for="FotoArchivo"></label>
+            <input asp-for="FotoArchivo" type="file" accept="image/*" class="form-control" />
+        </div>
+    </div>
+
+    <hr class="my-4" />
+    <h4>Estado de salud <small class="text-muted">(visible para todos)</small></h4>
+
+    <!-- Checkboxes con el MISMO name="EstadosSalud": ASP.NET Core junta
+         automáticamente todos los que queden marcados en una List<string>
+         al recibir el formulario, sin código extra. -->
+    <div class="d-flex flex-wrap gap-3 mb-3">
+        @foreach (var opcion in EcommerceApp.Models.Mascota.OpcionesEstadoSalud)
+        {
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" name="EstadosSalud" value="@opcion" id="salud_@opcion" />
+                <label class="form-check-label" for="salud_@opcion">@opcion</label>
+            </div>
+        }
+    </div>
+
+    <div class="row g-3">
+        <div class="col-12 col-md-4">
+            <div class="form-check">
+                <input asp-for="EnTratamiento" class="form-check-input" />
+                <label asp-for="EnTratamiento" class="form-check-label"></label>
+            </div>
+        </div>
+        <div class="col-12 col-md-4">
+            <div class="form-check">
+                <input asp-for="TieneEnfermedadBase" class="form-check-input" />
+                <label asp-for="TieneEnfermedadBase" class="form-check-label"></label>
+            </div>
+        </div>
+        <div class="col-12 col-md-4">
+            <div class="form-check">
+                <input asp-for="RequiereCuidadosLargoPlazo" class="form-check-input" />
+                <label asp-for="RequiereCuidadosLargoPlazo" class="form-check-label"></label>
+            </div>
+        </div>
+
+        <div class="col-12">
+            <label asp-for="ResumenCuidadosAdoptante"></label>
+            <textarea asp-for="ResumenCuidadosAdoptante" class="form-control" rows="2"
+                      placeholder="Ej: Necesita medicación para las articulaciones de por vida"></textarea>
+        </div>
+    </div>
+
+    <hr class="my-4" />
+    <h4>Información interna <small class="text-muted">🔒 solo la ve Zoonosis, nunca el adoptante</small></h4>
+
+    <div class="row g-3">
+        <div class="col-12">
+            <label asp-for="CondicionLlegada"></label>
+            <textarea asp-for="CondicionLlegada" class="form-control" rows="2"
+                      placeholder="Ej: Llegó desnutrido, con pulgas y una herida en la pata trasera"></textarea>
+        </div>
+        <div class="col-12">
+            <label asp-for="TratamientoAdministrativo"></label>
+            <textarea asp-for="TratamientoAdministrativo" class="form-control" rows="2"
+                      placeholder="Ej: Desparasitación en curso, control veterinario cada 15 días"></textarea>
+        </div>
+    </div>
+
+    <button type="submit" class="btn btn-adoptapatitas-primario mt-4">Guardar mascota</button>
+    <a asp-action="Index" class="btn btn-adoptapatitas-outline mt-4">Cancelar</a>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

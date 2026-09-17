@@ -1,0 +1,87 @@
+﻿@model EcommerceApp.Models.RegisterViewModel
+@{
+    ViewData["Title"] = "Crear cuenta";
+    ViewData["OcultarNavbar"] = true;
+}
+
+<div class="login-page-wrapper">
+    <video class="login-bg-video" autoplay muted loop playsinline>
+        <source src="https://azselqmobzpcongydmbt.supabase.co/storage/v1/object/public/inicio/fondo%20patitas.mp4" type="video/mp4">
+    </video>
+    <div class="login-bg-overlay"></div>
+
+    <!-- Panel único (no dividido en dos como el Login) porque el
+         formulario de registro tiene muchos más campos y necesita
+         más espacio horizontal para acomodarlos en columnas. -->
+    <div class="registro-panel">
+        <h2>🐾 Crear cuenta de Adoptante</h2>
+        <p class="text-muted mb-4">Completa tus datos para empezar a adoptar.</p>
+
+        <form asp-action="Register" method="post" enctype="multipart/form-data" class="form-adoptapatitas">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label asp-for="Nombre"></label>
+                    <input asp-for="Nombre" class="form-control" />
+                    <span asp-validation-for="Nombre" class="text-danger"></span>
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="Apellido"></label>
+                    <input asp-for="Apellido" class="form-control" />
+                    <span asp-validation-for="Apellido" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-4">
+                    <label asp-for="Edad"></label>
+                    <input asp-for="Edad" type="number" class="form-control" />
+                    <span asp-validation-for="Edad" class="text-danger"></span>
+                </div>
+                <div class="col-md-8">
+                    <label asp-for="Email"></label>
+                    <input asp-for="Email" class="form-control" placeholder="tucorreo@ejemplo.com" />
+                    <span asp-validation-for="Email" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-6">
+                    <label asp-for="Telefono"></label>
+                    <input asp-for="Telefono" class="form-control" />
+                    <span asp-validation-for="Telefono" class="text-danger"></span>
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="NumeroCarnet"></label>
+                    <input asp-for="NumeroCarnet" class="form-control" />
+                    <span asp-validation-for="NumeroCarnet" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-6">
+                    <label asp-for="FotoCarnetAnverso"></label>
+                    <input asp-for="FotoCarnetAnverso" type="file" accept="image/*" class="form-control" />
+                    <span asp-validation-for="FotoCarnetAnverso" class="text-danger"></span>
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="FotoCarnetReverso"></label>
+                    <input asp-for="FotoCarnetReverso" type="file" accept="image/*" class="form-control" />
+                    <span asp-validation-for="FotoCarnetReverso" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-6">
+                    <label asp-for="Password"></label>
+                    <input asp-for="Password" class="form-control" />
+                    <span asp-validation-for="Password" class="text-danger"></span>
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="ConfirmPassword"></label>
+                    <input asp-for="ConfirmPassword" class="form-control" />
+                    <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-adoptapatitas-primario w-100 mt-4">Registrarme</button>
+        </form>
+
+        <a asp-action="Login" class="btn btn-adoptapatitas-outline w-100 mt-2">Ya tengo cuenta</a>
+    </div>
+</div>
+
+@section Scripts { <partial name="_ValidationScriptsPartial" /> }
