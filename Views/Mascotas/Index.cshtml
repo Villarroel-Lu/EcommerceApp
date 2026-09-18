@@ -145,8 +145,16 @@ else
                         <div class="d-flex gap-2">
                             <a asp-action="Details" asp-route-id="@mascota.Id"
                                class="btn btn-sm btn-adoptapatitas-outline flex-fill">Ver perfil</a>
-                            <a asp-action="Details" asp-route-id="@mascota.Id"
-                               class="btn btn-sm btn-adoptapatitas-secundario flex-fill">Adoptar</a>
+                            @if (User.Identity!.IsAuthenticated && User.IsInRole("Adoptante"))
+                            {
+                                <a asp-controller="Solicitudes" asp-action="Crear" asp-route-mascotaId="@mascota.Id"
+                                   class="btn btn-sm btn-adoptapatitas-secundario flex-fill">Adoptar</a>
+                            }
+                            else
+                            {
+                                <a asp-controller="Account" asp-action="Login"
+                                   class="btn btn-sm btn-adoptapatitas-secundario flex-fill">Adoptar</a>
+                            }
                         </div>
                     </div>
                 </div>
@@ -182,7 +190,8 @@ else
                     <a class="pagina-link @(paginaActual == totalPaginas ? "disabled" : "")"
                        asp-action="Index"
                        asp-route-tipo="@tipoSeleccionado" asp-route-busqueda="@ViewBag.Busqueda"
-                       asp-route-sexo="@ViewBag.SexoSeleccionado" asp-route-orden="@ordenSeleccionado"
+            
+           asp-route-sexo="@ViewBag.SexoSeleccionado" asp-route-orden="@ordenSeleccionado"
                        asp-route-pagina="@(paginaActual + 1)">→</a>
                 </li>
             </ul>
@@ -196,5 +205,4 @@ else
         <a asp-action="Create" class="btn btn-adoptapatitas-primario">+ Registrar nueva mascota</a>
     </div>
 }
-
 </div>

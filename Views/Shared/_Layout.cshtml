@@ -4,12 +4,25 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- ViewData["Title"] lo define cada vista individual (Index.cshtml,
+         Login.cshtml, etc.) — así la pestaña del navegador muestra un
+         título distinto según en qué página estés. -->
     <title>@ViewData["Title"] - EcommerceApp</title>
     <script type="importmap"></script>
+
+    <!-- Google Fonts: Quicksand (redondeada, para títulos/botones) y
+         Poppins (para texto normal). Los "preconnect" aceleran la carga
+         adelantando la conexión al servidor de fuentes. -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;600;700&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
 
+    <!-- Bootstrap: la base de estilos (grillas, botones, formularios).
+         site.css y EcommerceApp.styles.css son los que trae el esqueleto
+         original del proyecto. adoptapatitas.css es el nuestro, con toda
+         la paleta de colores y componentes propios de AdoptaPatitas —
+         va AL FINAL para que sus reglas puedan sobreescribir a las
+         anteriores si hace falta. -->
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/EcommerceApp.styles.css" asp-append-version="true" />
@@ -18,25 +31,34 @@
 
 <body>
 
+<!-- La navbar completa se oculta en Login/Register/Recuperar contraseña:
+     esas vistas ponen ViewData["OcultarNavbar"] = true en su @{ } de
+     arriba. En cualquier otra página (donde no se define esa bandera),
+     la condición es false y la navbar se muestra normal. -->
 @if (ViewData["OcultarNavbar"] as bool? != true)
 {
     <header>
         <nav class="navbar navbar-expand-lg navbar-adoptapatitas sticky-top py-3" id="navbarPrincipal">
             <div class="container">
 
-                <!-- Marca: patita + nombre, enlaza al catálogo -->
+                <!-- Marca: patita + nombre, siempre lleva al catálogo
+                     de mascotas al hacer clic (como el logo de cualquier sitio) -->
                 <a class="navbar-brand d-flex align-items-center gap-2" asp-controller="Mascotas" asp-action="Index">
                     <span style="font-size:1.6rem;">🐾</span>
                     <span>Adopta<span style="color:var(--color-secundario);">Patitas</span></span>
                 </a>
 
+                <!-- Botón "hamburguesa" que aparece en pantallas chicas
+                     (celular) para desplegar el menú — es puro Bootstrap,
+                     no necesita JavaScript propio. -->
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarAdopta">
                     <span class="navbar-toggler-icon"></span>
                 </button>
 
                 <div class="collapse navbar-collapse" id="navbarAdopta">
 
-                    <!-- Links centrales del tema -->
+                    <!-- Links centrales: los mismos para cualquier persona,
+                         tenga sesión iniciada o no. -->
                     <ul class="navbar-nav mx-auto gap-lg-3">
                         <li class="nav-item">
                             <a class="nav-link nav-link-adoptapatitas" asp-controller="Home" asp-action="Index">Inicio</a>
@@ -52,19 +74,44 @@
                         </li>
                     </ul>
 
-                    <!-- Cuenta: cambia según si hay sesión iniciada -->
+                    <!-- Zona de la cuenta: esto SÍ cambia según el estado
+                         de la sesión y el rol de quien esté mirando. -->
                     <ul class="navbar-nav ms-auto align-items-lg-center gap-2">
                         @if (User.Identity!.IsAuthenticated)
                         {
+                            <!-- Con sesión iniciada: muestra el nombre y un
+                                 menú desplegable (dropdown) con las opciones
+                                 según el rol. -->
                             <li class="nav-item dropdown">
                                 <a class="nav-link dropdown-toggle nav-link-adoptapatitas" href="#" role="button" data-bs-toggle="dropdown">
                                     👤 @User.Identity.Name
                                 </a>
                                 <ul class="dropdown-menu dropdown-menu-end">
+
+                                    <!-- Solo el rol Zoonosis ve estos tres
+                                         links: administrar mascotas, revisar
+                                         las solicitudes de adopción pendientes,
+                                         y ver la lista de adoptantes registrados. -->
                                     @if (User.IsInRole("Zoonosis"))
                                     {
                                         <li><a class="dropdown-item" asp-controller="Mascotas" asp-action="Administrar">Panel de administración</a></li>
+                                        <li><a class="dropdown-item" asp-controller="Solicitudes" asp-action="Revisar">Revisar solicitudes</a></li>
+                                        <li><a class="dropdown-item" asp-controller="Adoptantes" asp-action="Index">Adoptantes registrados</a></li>
                                     }
+
+                                    <!-- Solo el rol Adoptante ve este link:
+                                         el estado de las solicitudes que
+                                         él mismo hizo. -->
+                                    @if (User.IsInRole("Adoptante"))
+                                    {
+                                        <li><a class="dropdown-item" asp-controller="Solicitudes" asp-action="MisSolicitudes">Mis solicitudes</a></li>
+                                    }
+
+                                    <!-- Cerrar sesión: va como un <form> con
+                                         POST (no un simple link) porque
+                                         cerrar sesión modifica el estado del
+                                         servidor, y eso siempre debe ir por
+                                         POST, no por GET. -->
                                     <li>
                                         <form asp-controller="Account" asp-action="Logout" method="post" class="px-3">
                                             <button type="submit" class="btn btn-sm btn-adoptapatitas-outline w-100 mt-1">Cerrar sesión</button>
@@ -75,6 +122,8 @@
                         }
                         else
                         {
+                            <!-- Sin sesión iniciada: solo se ven los botones
+                                 de Iniciar sesión / Registrarme. -->
                             <li class="nav-item">
                                 <a class="btn btn-adoptapatitas-outline btn-sm" asp-controller="Account" asp-action="Login">Iniciar sesión</a>
                             </li>
@@ -88,6 +137,9 @@
         </nav>
     </header>
 }
+    <!-- @RenderBody() es donde se inserta el contenido de CADA vista
+         individual (Index.cshtml, Details.cshtml, etc.) — este archivo
+         es el "molde" que envuelve a todas las páginas del sitio. -->
     <div class="container">
         <main role="main" class="pb-3">
             @RenderBody()
@@ -99,9 +151,17 @@
             &copy; 2026 - EcommerceApp - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
         </div>
     </footer>
+
+    <!-- Scripts al final del <body> (no en el <head>) es buena práctica:
+         así el HTML y el CSS ya cargaron antes de que el navegador
+         tenga que descargar y ejecutar JavaScript. -->
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
+
+    <!-- Cada vista puede definir su propia sección "Scripts" (por ejemplo,
+         para cargar el script de validación de un formulario). Si esa
+         vista no la define, "required: false" evita que truene. -->
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

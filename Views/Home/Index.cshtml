@@ -1,8 +1,109 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Inicio";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="catalogo-full-ancho">
+
+    <!-- ===== Hero: lo primero que ve cualquiera al entrar ===== -->
+    <div class="banner-mascotas d-flex flex-column flex-md-row justify-content-between align-items-center gap-3 mb-4">
+        <div>
+            <h1 class="mb-2">🐾 Encuentra un amigo, cambia una vida</h1>
+            <p class="mb-0 fs-5">
+                AdoptaPatitas conecta perritos y gatitos de Zoonosis Cochabamba
+                con familias responsables. Adopta, no compres.
+            </p>
+        </div>
+        <a asp-controller="Mascotas" asp-action="Index" class="btn btn-adoptapatitas-primario btn-lg text-nowrap">
+            Ver mascotas en adopción
+        </a>
+    </div>
+
+    <!-- ===== Contenido que cambia según quién esté mirando =====
+         Esto es justo lo que pediste: algo distinto para el visitante
+         sin cuenta, el Adoptante logueado, y Zoonosis. -->
+    @if (!User.Identity!.IsAuthenticated)
+    {
+        <!-- Nadie ha iniciado sesión: invitamos a registrarse -->
+        <div class="row g-4 mb-4">
+            <div class="col-md-4">
+                <div class="p-4 h-100 text-center" style="background:var(--color-blanco); border-radius:16px;">
+                    <div style="font-size:2rem;">📝</div>
+                    <h5 class="mt-2">1. Crea tu cuenta</h5>
+                    <p class="text-muted small mb-0">Solo nombre, correo y contraseña — toma un minuto.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="p-4 h-100 text-center" style="background:var(--color-blanco); border-radius:16px;">
+                    <div style="font-size:2rem;">🔍</div>
+                    <h5 class="mt-2">2. Encuentra a tu compañero</h5>
+                    <p class="text-muted small mb-0">Filtra por tipo, edad, sexo y ubicación.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="p-4 h-100 text-center" style="background:var(--color-blanco); border-radius:16px;">
+                    <div style="font-size:2rem;">🏡</div>
+                    <h5 class="mt-2">3. Solicita adoptar</h5>
+                    <p class="text-muted small mb-0">Zoonosis revisa tu solicitud y coordina la entrega.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="text-center mb-4">
+            <a asp-controller="Account" asp-action="Register" class="btn btn-adoptapatitas-primario me-2">Crear cuenta</a>
+            <a asp-controller="Home" asp-action="Nosotros" class="btn btn-adoptapatitas-outline">Conoce más sobre nosotros</a>
+        </div>
+    }
+    else if (User.IsInRole("Zoonosis"))
+    {
+        <!-- Zoonosis: accesos directos a su trabajo del día a día -->
+        <h4 class="mb-3">Accesos rápidos</h4>
+        <div class="row g-3 mb-4">
+            <div class="col-md-4">
+                <a asp-controller="Mascotas" asp-action="Administrar" class="text-decoration-none">
+                    <div class="p-4 h-100 text-center" style="background:var(--color-blanco); border-radius:16px;">
+                        <div style="font-size:2rem;">🐶</div>
+                        <h5 class="mt-2 text-dark">Administrar mascotas</h5>
+                    </div>
+                </a>
+            </div>
+            <div class="col-md-4">
+                <a asp-controller="Solicitudes" asp-action="Revisar" class="text-decoration-none">
+                    <div class="p-4 h-100 text-center" style="background:var(--color-blanco); border-radius:16px;">
+                        <div style="font-size:2rem;">📋</div>
+                        <h5 class="mt-2 text-dark">Revisar solicitudes</h5>
+                    </div>
+                </a>
+            </div>
+            <div class="col-md-4">
+                <a asp-controller="Adoptantes" asp-action="Index" class="text-decoration-none">
+                    <div class="p-4 h-100 text-center" style="background:var(--color-blanco); border-radius:16px;">
+                        <div style="font-size:2rem;">👥</div>
+                        <h5 class="mt-2 text-dark">Adoptantes registrados</h5>
+                    </div>
+                </a>
+            </div>
+        </div>
+    }
+    else if (User.IsInRole("Adoptante"))
+    {
+        <!-- Adoptante: recordarle que puede ver el estado de sus solicitudes -->
+        <div class="row g-3 mb-4">
+            <div class="col-md-6">
+                <a asp-controller="Mascotas" asp-action="Index" class="text-decoration-none">
+                    <div class="p-4 h-100 text-center" style="background:var(--color-blanco); border-radius:16px;">
+                        <div style="font-size:2rem;">🐾</div>
+                        <h5 class="mt-2 text-dark">Ver mascotas disponibles</h5>
+                    </div>
+                </a>
+            </div>
+            <div class="col-md-6">
+                <a asp-controller="Solicitudes" asp-action="MisSolicitudes" class="text-decoration-none">
+                    <div class="p-4 h-100 text-center" style="background:var(--color-blanco); border-radius:16px;">
+                        <div style="font-size:2rem;">📄</div>
+                        <h5 class="mt-2 text-dark">Ver mis solicitudes</h5>
+                    </div>
+                </a>
+            </div>
+        </div>
+    }
 </div>

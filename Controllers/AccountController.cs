@@ -2,15 +2,13 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using EcommerceApp.Models;
-using EcommerceApp.Services;
 
 namespace EcommerceApp.Controllers
 {
     public class AccountController(
         UserManager<ApplicationUser> userManager,
         SignInManager<ApplicationUser> signInManager,
-        RoleManager<IdentityRole> roleManager,
-        SupabaseStorageService storage) : Controller
+        RoleManager<IdentityRole> roleManager) : Controller
     {
         [HttpGet]
         public IActionResult Login() => View();
@@ -37,29 +35,21 @@ namespace EcommerceApp.Controllers
         [HttpGet]
         public IActionResult Register() => View();
 
+        // Registro simplificado: solo nombre, apellido, correo y contraseña.
+        // Los datos "formales" (carnet, edad, domicilio, motivo, etc.) se
+        // piden más adelante, al momento de solicitar una adopción.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Register(RegisterViewModel model)
         {
             if (!ModelState.IsValid) return View(model);
 
-            // Antes se guardaban en wwwroot/uploads/carnets; ahora suben
-            // directo a Supabase Storage (bucket "carnets") y guardamos
-            // la URL pública que nos devuelve.
-            var urlAnverso = await storage.SubirArchivoAsync(model.FotoCarnetAnverso, "carnets", "anverso");
-            var urlReverso = await storage.SubirArchivoAsync(model.FotoCarnetReverso, "carnets", "reverso");
-
             var user = new ApplicationUser
             {
                 UserName = model.Email,
                 Email = model.Email,
                 Nombre = model.Nombre,
-                Apellido = model.Apellido,
-                Edad = model.Edad,
-                PhoneNumber = model.Telefono,
-                NumeroCarnet = model.NumeroCarnet,
-                FotoCarnetAnversoUrl = urlAnverso,
-                FotoCarnetReversoUrl = urlReverso
+                Apellido = model.Apellido
             };
 
             var result = await userManager.CreateAsync(user, model.Password);
@@ -103,7 +93,6 @@ namespace EcommerceApp.Controllers
             var info = await signInManager.GetExternalLoginInfoAsync();
             if (info == null) return RedirectToAction(nameof(Login));
 
-            // Si ya inició sesión antes con este mismo proveedor, lo dejamos entrar directo
             var signInResult = await signInManager.ExternalLoginSignInAsync(
                 info.LoginProvider, info.ProviderKey, isPersistent: false, bypassTwoFactor: true);
 
@@ -113,7 +102,6 @@ namespace EcommerceApp.Controllers
                 return await RedirectSegunPerfil(existingUser);
             }
 
-            // Primera vez con este proveedor: buscamos por email o creamos el usuario
             var email = info.Principal.FindFirstValue(ClaimTypes.Email);
             var nombre = info.Principal.FindFirstValue(ClaimTypes.GivenName)
                          ?? info.Principal.FindFirstValue(ClaimTypes.Name);
@@ -128,6 +116,7 @@ namespace EcommerceApp.Controllers
 
             if (user == null)
             {
+                // Igual que el registro normal: solo lo básico por ahora.
                 user = new ApplicationUser
                 {
                     UserName = email,
@@ -156,61 +145,19 @@ namespace EcommerceApp.Controllers
             return await RedirectSegunPerfil(user);
         }
 
-        // Decide a dónde va cada usuario justo después de iniciar sesión,
-        // según su rol. Se llama tanto desde Login como desde ExternalLoginCallback.
+        // Ya NO exige carnet/fotos completos para entrar a la app — eso
+        // se pide únicamente cuando la persona solicita adoptar.
         private async Task<IActionResult> RedirectSegunPerfil(ApplicationUser? user)
         {
             if (user == null) return RedirectToAction(nameof(Login));
 
             var roles = await userManager.GetRolesAsync(user);
 
-            // Zoonosis: va directo al panel de administración de mascotas.
-            // No pasa por la verificación de carnet (esa validación es solo
-            // para Adoptantes, no para el personal de Zoonosis).
             if (roles.Contains("Zoonosis"))
                 return RedirectToAction("Administrar", "Mascotas");
 
             if (roles.Contains("Veterinario"))
                 return RedirectToAction("Index", "Home"); // TODO: panel Veterinario
-
-            // Resto de casos = Adoptante. Si le falta el carnet o las fotos
-            // (por ejemplo, entró con Google/GitHub por primera vez),
-            // lo mandamos a completar su perfil antes de usar la app.
-            if (string.IsNullOrEmpty(user.NumeroCarnet) ||
-                string.IsNullOrEmpty(user.FotoCarnetAnversoUrl) ||
-                string.IsNullOrEmpty(user.FotoCarnetReversoUrl))
-            {
-                return RedirectToAction(nameof(CompletarPerfil));
-            }
-
-            return RedirectToAction("Index", "Mascotas");
-        }
-
-        // ---------- COMPLETAR PERFIL (para usuarios de login externo) ----------
-
-        [HttpGet]
-        public IActionResult CompletarPerfil() => View();
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> CompletarPerfil(CompletarPerfilViewModel model)
-        {
-            if (!ModelState.IsValid) return View(model);
-
-            var user = await userManager.GetUserAsync(User);
-            if (user == null) return RedirectToAction(nameof(Login));
-
-            var urlAnverso = await storage.SubirArchivoAsync(model.FotoCarnetAnverso, "carnets", "anverso");
-            var urlReverso = await storage.SubirArchivoAsync(model.FotoCarnetReverso, "carnets", "reverso");
-
-            user.Apellido = model.Apellido;
-            user.Edad = model.Edad;
-            user.PhoneNumber = model.Telefono;
-            user.NumeroCarnet = model.NumeroCarnet;
-            user.FotoCarnetAnversoUrl = urlAnverso;
-            user.FotoCarnetReversoUrl = urlReverso;
-
-            await userManager.UpdateAsync(user);
 
             return RedirectToAction("Index", "Mascotas");
         }

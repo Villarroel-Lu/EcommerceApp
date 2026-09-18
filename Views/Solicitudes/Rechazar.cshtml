@@ -1,0 +1,26 @@
+﻿@model EcommerceApp.Models.SolicitudAdopcion
+@{
+    ViewData["Title"] = "Rechazar solicitud";
+}
+
+<div class="catalogo-full-ancho">
+    <div class="registro-panel mx-auto" style="max-width:600px; position:static;">
+        <h2>Rechazar solicitud</h2>
+        <p class="text-muted">
+            Solicitud de <strong>@Model.Nombres @Model.Apellidos</strong> para adoptar a <strong>@Model.Mascota.Nombre</strong>.
+        </p>
+
+        <!-- No usamos asp-for aquí porque "observacion" no es una
+             propiedad del modelo SolicitudAdopcion que se guarde tal
+             cual — el controlador la recibe como parámetro suelto y la
+             asigna manualmente al campo Observacion. -->
+        <form asp-action="Rechazar" asp-route-id="@Model.Id" method="post" class="form-adoptapatitas">
+            <label for="observacion">Motivo del rechazo (la persona lo va a poder ver)</label>
+            <textarea name="observacion" id="observacion" class="form-control" rows="4" required
+                      placeholder="Ej: Los datos del carnet no coinciden con el nombre registrado"></textarea>
+
+            <button type="submit" class="btn btn-outline-danger mt-3">Confirmar rechazo</button>
+            <a asp-action="Revisar" class="btn btn-adoptapatitas-outline mt-3">Cancelar</a>
+        </form>
+    </div>
+</div>

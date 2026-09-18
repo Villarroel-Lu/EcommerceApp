@@ -1,0 +1,84 @@
+﻿@model IEnumerable<EcommerceApp.Models.SolicitudAdopcion>
+@{
+    ViewData["Title"] = "Revisar solicitudes";
+}
+
+<div class="catalogo-full-ancho">
+    <h2 class="mb-3">Solicitudes de adopción</h2>
+
+    @if (!Model.Any())
+    {
+        <p>No hay solicitudes registradas todavía.</p>
+    }
+
+    <div class="row g-3">
+        @foreach (var s in Model)
+        {
+            <div class="col-md-6">
+                <div class="p-3" style="background-color:var(--color-blanco); border-radius:16px; box-shadow:0 4px 16px rgba(0,0,0,0.05);">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <div>
+                            <h5 class="mb-0">@s.Nombres @s.Apellidos</h5>
+                            <p class="text-muted small mb-0">quiere adoptar a <strong>@s.Mascota.Nombre</strong></p>
+                        </div>
+                        <span class="estado-solicitud @s.Estado.ToString().ToLower()">@s.Estado</span>
+                    </div>
+
+                    <ul class="list-unstyled small mb-2">
+                        <li>🎂 @s.Edad años &nbsp; 📞 @s.Telefono &nbsp; ✉️ @s.Email</li>
+                        <li>🏠 @s.DondeVive</li>
+                        <li>🪪 Carnet: @s.NumeroCarnet</li>
+                        <li>🔗 @s.RedSocial</li>
+                        <li>
+                            🐶 ¿Tiene otras mascotas?
+                            @(s.TieneOtrasMascotas ? "Sí" : "No")
+                            @if (s.TieneOtrasMascotas && !string.IsNullOrEmpty(s.DetalleOtrasMascotas))
+                            {
+                                <text> — @s.DetalleOtrasMascotas</text>
+                            }
+                        </li>
+                        @if (!string.IsNullOrEmpty(s.Motivo))
+                        {
+                            <li>💬 "@s.Motivo"</li>
+                        }
+                    </ul>
+
+                    <!-- Fotos del carnet: se abren en pestaña nueva al hacer
+                         clic, para que Zoonosis pueda verlas en tamaño real. -->
+                    <div class="d-flex gap-2 mb-2">
+                        @if (!string.IsNullOrEmpty(s.FotoCarnetAnversoUrl))
+                        {
+                            <a href="@s.FotoCarnetAnversoUrl" target="_blank">
+                                <img src="@s.FotoCarnetAnversoUrl" style="width:70px;height:70px;object-fit:cover;border-radius:8px;" />
+                            </a>
+                        }
+                        @if (!string.IsNullOrEmpty(s.FotoCarnetReversoUrl))
+                        {
+                            <a href="@s.FotoCarnetReversoUrl" target="_blank">
+                                <img src="@s.FotoCarnetReversoUrl" style="width:70px;height:70px;object-fit:cover;border-radius:8px;" />
+                            </a>
+                        }
+                    </div>
+
+                    @if (s.Estado == EcommerceApp.Models.EstadoSolicitud.Pendiente)
+                    {
+                        <div class="d-flex gap-2">
+                            <!-- Aprobar es un solo click: formulario mínimo
+                                 que solo manda el Id -->
+                            <form asp-action="Aprobar" asp-route-id="@s.Id" method="post" class="flex-fill">
+                                <button type="submit" class="btn btn-adoptapatitas-primario w-100">Aprobar</button>
+                            </form>
+                            <!-- Rechazar lleva a una página aparte porque
+                                 necesita pedir el motivo -->
+                            <a asp-action="Rechazar" asp-route-id="@s.Id" class="btn btn-outline-danger flex-fill text-center">Rechazar</a>
+                        </div>
+                    }
+                    else if (!string.IsNullOrEmpty(s.Observacion))
+                    {
+                        <p class="mb-0 small fst-italic">Motivo del rechazo: "@s.Observacion"</p>
+                    }
+                </div>
+            </div>
+        }
+    </div>
+</div>

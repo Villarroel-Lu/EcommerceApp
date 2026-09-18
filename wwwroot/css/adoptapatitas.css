@@ -755,3 +755,38 @@ h1, h2, h3, h4, h5, h6,
         box-shadow: 0 8px 18px rgba(91, 58, 142, 0.2);
         border-color: var(--color-primario);
     }
+/* ============================================================
+   Estados de solicitud + alertas
+   (agregar al final de adoptapatitas.css, si no lo tienes ya)
+   ============================================================ */
+.estado-solicitud {
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--color-blanco);
+    white-space: nowrap;
+}
+
+    .estado-solicitud.pendiente {
+        background-color: #f0ad4e;
+    }
+
+    .estado-solicitud.aprobada {
+        background-color: var(--color-verde);
+    }
+
+    .estado-solicitud.rechazada {
+        background-color: var(--color-secundario);
+    }
+
+.alert-adoptapatitas {
+    padding: 14px 20px;
+    border-radius: 12px;
+    font-weight: 600;
+}
+
+.alert-info-adoptapatitas {
+    background-color: var(--color-menta);
+    color: var(--color-texto);
+}

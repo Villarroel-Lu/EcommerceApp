@@ -1,0 +1,114 @@
+﻿@model EcommerceApp.Models.SolicitudAdopcion
+@{
+    ViewData["Title"] = "Solicitud de adopción";
+}
+
+<div class="catalogo-full-ancho">
+    <div class="registro-panel mx-auto" style="position:static; box-shadow:0 10px 30px rgba(91,58,142,0.1); max-width:700px;">
+
+        <h2>🐾 Solicitud de adopción</h2>
+        <p class="text-muted mb-2">
+            Estás solicitando adoptar a <strong>@Model.Mascota.Nombre</strong>. Estos datos
+            nos ayudan a verificar que serás un buen hogar para ella.
+        </p>
+
+        <!-- enctype="multipart/form-data" es obligatorio porque el
+             formulario incluye archivos (fotos del carnet). -->
+        <form asp-action="Crear" method="post" enctype="multipart/form-data" class="form-adoptapatitas">
+            <!-- MascotaId va oculto: no lo edita el usuario, solo identifica
+                 a qué mascota corresponde esta solicitud. -->
+            <input type="hidden" asp-for="MascotaId" />
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <div class="row g-3">
+                <!-- Nombres/Apellidos/Email ya vienen pre-llenados desde la
+                     cuenta (ver SolicitudesController.Crear GET), pero
+                     siguen siendo editables por si algo cambió. -->
+                <div class="col-md-6">
+                    <label asp-for="Nombres"></label>
+                    <input asp-for="Nombres" class="form-control" oninput="this.value = this.value.replace(/[^a-zA-ZÀ-ÿ\s]/g, '')" />
+                    <span asp-validation-for="Nombres" class="text-danger"></span>
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="Apellidos"></label>
+                    <input asp-for="Apellidos" class="form-control" oninput="this.value = this.value.replace(/[^a-zA-ZÀ-ÿ\s]/g, '')" />
+                    <span asp-validation-for="Apellidos" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-4">
+                    <label asp-for="Edad"></label>
+                    <input asp-for="Edad" type="number" min="18" max="60" class="form-control" />
+                    <span asp-validation-for="Edad" class="text-danger"></span>
+                </div>
+                <div class="col-md-4">
+                    <label asp-for="Telefono"></label>
+                    <input asp-for="Telefono" class="form-control" oninput="this.value = this.value.replace(/[^0-9]/g, '')" />
+                    <span asp-validation-for="Telefono" class="text-danger"></span>
+                </div>
+                <div class="col-md-4">
+                    <label asp-for="Email"></label>
+                    <input asp-for="Email" class="form-control" />
+                    <span asp-validation-for="Email" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-6">
+                    <label asp-for="DondeVive"></label>
+                    <input asp-for="DondeVive" class="form-control" placeholder="Zona / dirección" />
+                    <span asp-validation-for="DondeVive" class="text-danger"></span>
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="RedSocial"></label>
+                    <input asp-for="RedSocial" class="form-control" placeholder="Ej: facebook.com/tuNombre" />
+                    <span asp-validation-for="RedSocial" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-6">
+                    <label asp-for="NumeroCarnet"></label>
+                    <input asp-for="NumeroCarnet" class="form-control" />
+                    <span asp-validation-for="NumeroCarnet" class="text-danger"></span>
+                </div>
+
+                <!-- Checkbox + textarea condicional: el detalle solo tiene
+                     sentido si marcó que sí tiene otras mascotas. Lo dejamos
+                     siempre visible por simplicidad (sin JS extra), pero
+                     es opcional igual. -->
+                <div class="col-md-6 d-flex align-items-center">
+                    <div class="form-check mt-4">
+                        <input asp-for="TieneOtrasMascotas" class="form-check-input" />
+                        <label asp-for="TieneOtrasMascotas" class="form-check-label"></label>
+                    </div>
+                </div>
+                <div class="col-12">
+                    <label asp-for="DetalleOtrasMascotas"></label>
+                    <input asp-for="DetalleOtrasMascotas" class="form-control" placeholder="Ej: un perro y un gato, ambos vacunados" />
+                </div>
+
+                <div class="col-12">
+                    <p class="mb-1 small text-muted">
+                        Fotos de tu carnet (obligatorias, para verificar tu identidad antes de aprobar).
+                    </p>
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="FotoCarnetAnversoArchivo"></label>
+                    <input asp-for="FotoCarnetAnversoArchivo" type="file" accept="image/*" class="form-control" />
+                    <span asp-validation-for="FotoCarnetAnversoArchivo" class="text-danger"></span>
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="FotoCarnetReversoArchivo"></label>
+                    <input asp-for="FotoCarnetReversoArchivo" type="file" accept="image/*" class="form-control" />
+                    <span asp-validation-for="FotoCarnetReversoArchivo" class="text-danger"></span>
+                </div>
+
+                <div class="col-12">
+                    <label asp-for="Motivo"></label>
+                    <textarea asp-for="Motivo" class="form-control" rows="3"
+                              placeholder="Cuéntanos por qué quieres adoptar (opcional)"></textarea>
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-adoptapatitas-primario w-100 mt-4">Enviar solicitud</button>
+        </form>
+    </div>
+</div>
+
+@section Scripts { <partial name="_ValidationScriptsPartial" /> }

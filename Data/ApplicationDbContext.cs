@@ -11,6 +11,9 @@ namespace EcommerceApp.Data
         // Tabla de mascotas (antes era "Products" en el esqueleto original)
         public DbSet<Mascota> Mascotas { get; set; }
 
+        // Tabla nueva de solicitudes de adopción
+        public DbSet<SolicitudAdopcion> Solicitudes { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -24,6 +27,12 @@ namespace EcommerceApp.Data
 
             modelBuilder.Entity<Mascota>()
                 .Property(m => m.Sexo)
+                .HasConversion<string>();
+
+            // Mismo motivo: guarda el estado de la solicitud como texto
+            // ("Pendiente", "Aprobada", "Rechazada") en vez de un número.
+            modelBuilder.Entity<SolicitudAdopcion>()
+                .Property(s => s.Estado)
                 .HasConversion<string>();
         }
     }

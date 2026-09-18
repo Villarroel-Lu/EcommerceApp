@@ -1,0 +1,44 @@
+﻿@model EcommerceApp.Models.ApplicationUser
+@{
+    ViewData["Title"] = $"{Model.Nombre} {Model.Apellido}";
+    // Lo llenó AdoptantesController.Details() — la lista de solicitudes
+    // de este adoptante, ya con la Mascota incluida.
+    var solicitudes = ViewBag.Solicitudes as List<EcommerceApp.Models.SolicitudAdopcion>;
+}
+
+<div class="catalogo-full-ancho">
+    <a asp-action="Index" class="btn btn-sm btn-adoptapatitas-outline mb-3">← Volver a la lista</a>
+
+    <div class="p-3 mb-4" style="background:var(--color-blanco); border-radius:16px;">
+        <h3 class="mb-1">@Model.Nombre @Model.Apellido</h3>
+        <p class="text-muted mb-0">@Model.Email</p>
+    </div>
+
+    <h4 class="mb-3">Historial de solicitudes</h4>
+
+    @if (solicitudes == null || !solicitudes.Any())
+    {
+        <p>Todavía no ha hecho ninguna solicitud.</p>
+    }
+    else
+    {
+        <div class="row g-3">
+            @foreach (var s in solicitudes)
+            {
+                <div class="col-md-6">
+                    <div class="p-3" style="background:var(--color-blanco); border-radius:16px; box-shadow:0 4px 16px rgba(0,0,0,0.05);">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <h5 class="mb-1">@s.Mascota.Nombre</h5>
+                            <span class="estado-solicitud @s.Estado.ToString().ToLower()">@s.Estado</span>
+                        </div>
+                        <p class="text-muted small mb-0">@s.FechaSolicitud.ToString("dd/MM/yyyy")</p>
+                        @if (!string.IsNullOrEmpty(s.Observacion))
+                        {
+                            <p class="mb-0 small fst-italic mt-2">"@s.Observacion"</p>
+                        }
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>

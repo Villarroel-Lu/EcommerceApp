@@ -1,0 +1,71 @@
+﻿@model IEnumerable<EcommerceApp.Models.SolicitudAdopcion>
+@{
+    ViewData["Title"] = "Mis solicitudes";
+}
+
+<div class="catalogo-full-ancho">
+    <h2 class="mb-3">Mis solicitudes de adopción</h2>
+
+    <!-- Mensaje que dejó el controlador después de crear una solicitud
+         (o si intentó duplicar una). TempData sobrevive UN solo redirect,
+         justo lo que necesitamos aquí. -->
+    @if (TempData["Mensaje"] != null)
+    {
+        <div class="alert-adoptapatitas alert-info-adoptapatitas mb-3">@TempData["Mensaje"]</div>
+    }
+
+    @if (!Model.Any())
+    {
+        <div class="estado-vacio text-center">
+            <div class="estado-vacio-icono">🐾</div>
+            <h4>Todavía no hiciste ninguna solicitud</h4>
+            <a asp-controller="Mascotas" asp-action="Index" class="btn btn-adoptapatitas-primario">Ver mascotas en adopción</a>
+        </div>
+    }
+    else
+    {
+        <div class="row g-3">
+            @foreach (var solicitud in Model)
+            {
+                <div class="col-md-6">
+                    <div class="p-3" style="background-color:var(--color-blanco); border-radius:16px; box-shadow:0 4px 16px rgba(0,0,0,0.05);">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <h5 class="mb-1">@solicitud.Mascota.Nombre</h5>
+                                <p class="text-muted small mb-2">Solicitado el @solicitud.FechaSolicitud.ToString("dd/MM/yyyy")</p>
+                            </div>
+                            <!-- El color del badge cambia según el estado
+                                 (ver la clase CSS .estado-solicitud.pendiente/aprobada/rechazada) -->
+                            <span class="estado-solicitud @solicitud.Estado.ToString().ToLower()">
+                                @solicitud.Estado
+                            </span>
+                        </div>
+
+                        @if (solicitud.Estado == EcommerceApp.Models.EstadoSolicitud.Pendiente)
+                        {
+                            <p class="mb-0">Tu solicitud está en revisión. Vuelve a esta página para ver la respuesta.</p>
+                        }
+                        else if (solicitud.Estado == EcommerceApp.Models.EstadoSolicitud.Aprobada)
+                        {
+                            <p class="mb-0">
+                                ¡Felicidades! Tu solicitud fue <strong>aprobada</strong>. Acércate al refugio
+                                para la verificación en persona y coordinar la entrega.
+                            </p>
+                        }
+                        else
+                        {
+                            <p class="mb-1">Tu solicitud fue <strong>rechazada</strong>.</p>
+                            @if (!string.IsNullOrEmpty(solicitud.Observacion))
+                            {
+                                <p class="mb-2 fst-italic">"@solicitud.Observacion"</p>
+                            }
+                            <a asp-controller="Mascotas" asp-action="Index" class="btn btn-sm btn-adoptapatitas-outline">
+                                Buscar otra mascota
+                            </a>
+                        }
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>
