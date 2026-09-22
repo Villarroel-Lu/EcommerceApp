@@ -1,0 +1,73 @@
+﻿@{
+    ViewData["Title"] = "Reportes";
+}
+
+@* ============================================================
+   PANTALLA DE REPORTES (solo Zoonosis)
+   Tres tarjetas, una por cada reporte. Cada botón "Descargar PDF"
+   es un simple enlace <a>: al ser una petición GET que devuelve un
+   archivo (ver ReportesController), el navegador lo descarga solo,
+   sin necesidad de JavaScript.
+   ============================================================ *@
+<style>
+    .rp-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+        gap: 20px;
+        margin-top: 20px;
+    }
+
+    .rp-tarjeta {
+        display: flex;
+        flex-direction: column;
+        padding: 24px;
+        border-radius: 20px;
+        background-color: #fff;
+        border: 1px solid var(--color-rosa-claro);
+        box-shadow: 0 10px 26px rgba(91, 58, 142, 0.10);
+    }
+
+    .rp-icono { font-size: 2rem; margin-bottom: 8px; }
+
+    .rp-tarjeta h5 {
+        font-family: 'Quicksand', sans-serif;
+        font-weight: 700;
+        color: var(--color-primario);
+    }
+
+    .rp-tarjeta p { flex-grow: 1; color: #6c6677; font-size: 0.92rem; }
+</style>
+
+<div class="mt-4">
+    <h2>📄 Reportes</h2>
+    <p class="text-muted">Descarga la información del sistema en PDF, lista para imprimir o compartir.</p>
+
+    <div class="rp-grid">
+        <div class="rp-tarjeta">
+            <div class="rp-icono">📋</div>
+            <h5>Solicitudes por estado</h5>
+            <p>
+                Todas las solicitudes de adopción, agrupadas en Pendientes, Aprobadas y Rechazadas.
+                La sección de Aprobadas ya muestra quién adoptó, qué mascota y cuándo.
+            </p>
+            <a asp-action="SolicitudesPorEstado" class="btn btn-adoptapatitas-primario">⬇ Descargar PDF</a>
+        </div>
+
+        <div class="rp-tarjeta">
+            <div class="rp-icono">🐾</div>
+            <h5>Mascotas por sección</h5>
+            <p>
+                Perros y Gatos por separado, con fecha de ingreso, color y descripción, y su
+                estado actual: Disponible, Pendiente (con una solicitud en revisión) o Adoptada.
+            </p>
+            <a asp-action="MascotasPorSeccion" class="btn btn-adoptapatitas-primario">⬇ Descargar PDF</a>
+        </div>
+
+        <div class="rp-tarjeta">
+            <div class="rp-icono">💜</div>
+            <h5>Adopciones por adoptante</h5>
+            <p>Un registro histórico: quién adoptó, qué mascota y en qué fecha, ordenado por adoptante.</p>
+            <a asp-action="AdopcionesPorAdoptante" class="btn btn-adoptapatitas-primario">⬇ Descargar PDF</a>
+        </div>
+    </div>
+</div>

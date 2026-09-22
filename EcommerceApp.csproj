@@ -21,6 +21,14 @@
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
 		<PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="10.0.0" />
+		<!-- QuestPDF: genera los reportes en PDF (Reportes/*). Licencia Community,
+		     gratuita para individuos y empresas con menos de 1 millón USD de
+		     ingresos anuales (ver Program.cs, donde se activa esa licencia). -->
+		<PackageReference Include="QuestPDF" Version="2026.5.0" />
+		<!-- Genera los PDF de los reportes (Reportes/) en C# puro, sin necesitar
+		     ningún programa externo instalado en el servidor (Render no trae
+		     navegador ni conversores, así que esta es la opción segura). -->
+		<PackageReference Include="QuestPDF" Version="2026.5.0" />
 	</ItemGroup>
 
 </Project>

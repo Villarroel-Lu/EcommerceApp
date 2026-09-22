@@ -17,6 +17,18 @@ RUN dotnet publish -c Release -o /app/publish
 # Esta imagen es mucho más liviana: solo trae el runtime necesario
 # para EJECUTAR la app, no el compilador completo.
 FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS final
+
+# QuestPDF (los reportes en PDF) dibuja el texto usando fuentes reales del
+# sistema operativo. La imagen de ASP.NET Core, por defecto, no trae NINGUNA
+# fuente instalada: sin esto, generar un PDF en Render fallaría con un error
+# (algo como "no se pudo dibujar el texto, no hay fuentes registradas").
+# "fonts-dejavu-core" es una fuente libre con tildes y ñ (importante para
+# textos en español); "libfontconfig1" es la librería que permite al sistema
+# ENCONTRAR las fuentes instaladas.
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends libfontconfig1 fonts-dejavu-core \
+    && rm -rf /var/lib/apt/lists/*
+
 WORKDIR /app
 COPY --from=build /app/publish .
 

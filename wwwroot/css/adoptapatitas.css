@@ -1030,3 +1030,178 @@ body {
     .modal-mascota-enlace:hover span {
         transform: translateX(4px);
     }
+/* ============================================================
+   V9 - CATÁLOGO COMO PÁGINA PRINCIPAL + BARRA SUPERIOR
+   (pegar AL FINAL de wwwroot/css/adoptapatitas.css; no se borra
+   nada de lo anterior)
+   ============================================================ */
+
+/* --- 1) Sin barra de scroll horizontal ---
+   El catálogo usa "width: 100vw" para ocupar todo el ancho de la
+   pantalla. Como 100vw incluye el ancho de la barra de scroll
+   vertical, la página se pasaba unos píxeles y aparecía una barra
+   horizontal abajo. Ahora que el catálogo es lo PRIMERO que ve
+   cualquier visitante, lo corregimos. (Solo afecta a <body>, así
+   la navbar pegajosa "sticky-top" sigue funcionando bien.) */
+body {
+    overflow-x: hidden;
+}
+
+/* --- 2) Nombre del usuario en el botón de la barra superior ---
+   El nombre que muestra es el correo, que puede ser muy largo. Se
+   recorta con "..." para que el botón no empuje ni rompa la barra,
+   sobre todo en el celular. */
+.nav-usuario-nombre {
+    display: inline-block;
+    max-width: 150px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    vertical-align: bottom;
+}
+
+/* ============================================================
+   V10 - LOGIN/REGISTRO CENTRADOS + VENTANA FLOTANTE DE MASCOTA
+   (pegar AL FINAL de wwwroot/css/adoptapatitas.css; no se borra
+   nada de lo anterior. Si ya pegaste el bloque V8 puedes dejarlo,
+   no se pelean.)
+   ============================================================ */
+
+/* ------------------------------------------------------------
+   1) PANTALLA DE LOGIN / REGISTRO (Views/Shared/_LayoutAuth.cshtml)
+   ------------------------------------------------------------ */
+
+/* "auth-pantalla" ocupa TODA la ventana (position: fixed + inset: 0) y
+   funciona como una caja flexible: el panel que lleva adentro se centra
+   con "margin: auto" (arriba, abajo, izquierda y derecha a la vez).
+   Si la pantalla es muy baja, aparece scroll dentro de esta caja en vez
+   de cortar el panel por arriba. */
+.auth-pantalla {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    overflow-x: hidden;
+    overflow-y: auto;
+    padding: 24px 16px;
+    background: var(--color-crema); /* color de respaldo mientras carga el video */
+}
+
+/* Video de fondo: fijo a la ventana, cubre todo sin deformarse. */
+.auth-bg-video {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: 0;
+}
+
+/* Capa morada/rosada semitransparente sobre el video, para que el
+   panel blanco se lea bien. */
+.auth-bg-overlay {
+    position: fixed;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(91, 58, 142, 0.55), rgba(217, 91, 145, 0.45));
+    z-index: 1;
+}
+
+/* El panel (login o registro) va POR ENCIMA del video y de la capa, y se
+   centra con margin: auto. */
+.auth-pantalla .login-panel-contenedor,
+.auth-pantalla .registro-panel {
+    position: relative;
+    z-index: 2;
+    margin: auto;
+}
+
+/* Pantallas de poca altura (laptops chicas, zoom alto): el panel se
+   ajusta a su contenido en vez de exigir 700px de alto. */
+@media (max-height: 760px) {
+    .auth-pantalla .login-panel-contenedor,
+    .auth-pantalla .login-panel-imagen,
+    .auth-pantalla .login-panel-imagen img {
+        min-height: 0;
+    }
+
+    .auth-pantalla .login-panel-formulario {
+        padding: 44px 48px 32px;
+    }
+}
+
+/* Celular: no hay imagen lateral, así que tampoco hace falta la altura mínima. */
+@media (max-width: 767px) {
+    .auth-pantalla .login-panel-contenedor {
+        min-height: 0;
+    }
+}
+
+/* ------------------------------------------------------------
+   2) VENTANA FLOTANTE DE LA MASCOTA (Views/Mascotas/Index.cshtml)
+   ------------------------------------------------------------ */
+
+/* Fondo oscuro detrás de la ventana, un poco más marcado que el normal
+   para que la mascota resalte. */
+.modal-backdrop.show {
+    opacity: 0.6;
+}
+
+/* La "tarjeta" de la ventana: esquinas bien redondeadas y sombra morada. */
+.modal-mascota .modal-content {
+    border: 0;
+    border-radius: 24px;
+    overflow: hidden;
+    background-color: var(--color-blanco);
+    box-shadow: 0 30px 80px rgba(91, 58, 142, 0.35);
+}
+
+/* Botón X de cerrar: círculo blanco flotando arriba a la derecha,
+   visible tanto sobre la foto como sobre el texto. */
+.modal-mascota .btn-close {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    z-index: 10;
+    padding: 10px;
+    opacity: 1;
+    border-radius: 50%;
+    background-color: rgba(255, 255, 255, 0.92);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
+}
+
+/* Columna de la foto: la imagen se estira para llenar TODA la columna
+   sin deformarse (object-fit: cover), sin importar cuánta info haya al lado. */
+.modal-mascota-foto-col {
+    position: relative;
+    min-height: 260px; /* en celular la foto queda arriba, con este alto */
+    background-color: var(--color-rosa-claro);
+}
+
+@media (min-width: 768px) {
+    .modal-mascota-foto-col {
+        min-height: 460px;
+    }
+}
+
+.modal-mascota-foto {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* Si la mascota no tiene foto: fondo degradado con el emoji grande. */
+.modal-mascota-sin-foto {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 5rem;
+    background: linear-gradient(135deg, var(--color-rosa-claro), var(--color-menta));
+}
+
+/* Datos de la ficha (Tipo, Sexo, Edad...) un poco más legibles. */
+.modal-mascota-ficha strong {
+    font-size: 0.95rem;
+}

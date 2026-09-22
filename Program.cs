@@ -1,10 +1,26 @@
+using EcommerceApp.Data;
+using EcommerceApp.Models;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using EcommerceApp.Data;
-using EcommerceApp.Models;
+using QuestPDF.Infrastructure;
+// OJO: no hace falta "using QuestPDF.Infrastructure;" aquí — el propio
+// paquete QuestPDF ya lo agrega solo (por eso .NET avisaba "duplicado"
+// cuando lo escribíamos a mano).
+
+// QuestPDF exige elegir un tipo de licencia antes de generar el primer PDF.
+// "Community" es la licencia gratuita (para proyectos/empresas pequeñas,
+// como este). Se registra una sola vez, al arrancar la aplicación.
+QuestPDF.Settings.License = LicenseType.Community;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// QuestPDF (generador de los reportes en PDF, ver Services/ReportesPdfService.cs)
+// necesita que se elija un tipo de licencia ANTES de generar cualquier PDF.
+// "Community" es gratuita: individuos, sin fines de lucro y empresas con
+// menos de 1 millón USD de ingresos anuales al año. Más info:
+// https://www.questpdf.com/license/
+QuestPDF.Settings.License = LicenseType.Community;
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
@@ -68,7 +84,9 @@ var forwardedHeadersOptions = new ForwardedHeadersOptions
 {
     ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
 };
-forwardedHeadersOptions.KnownNetworks.Clear();
+// "KnownNetworks" quedó obsoleta a partir de .NET 10 (Microsoft avisa con
+// ASPDEPR005); "KnownIPNetworks" es su reemplazo oficial.
+forwardedHeadersOptions.KnownIPNetworks.Clear();
 forwardedHeadersOptions.KnownProxies.Clear();
 app.UseForwardedHeaders(forwardedHeadersOptions);
 
