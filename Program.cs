@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using EcommerceApp.Data;
@@ -48,6 +49,28 @@ if (!app.Environment.IsDevelopment())
     app.UseExceptionHandler("/Home/Error");
     app.UseHsts();
 }
+
+// IMPORTANTE PARA RENDER (o cualquier hosting detrás de un proxy/balanceador):
+// Render recibe la visita por HTTPS, pero puertas adentro le entrega la
+// petición a la aplicación como si fuera HTTP. Sin esto, ASP.NET Core cree
+// que TODO el sitio es http, y arma las URLs de vuelta ("redirect_uri") de
+// Google/GitHub como "http://...". Como en el panel de Google/GitHub está
+// registrado "https://...", no coinciden y el login rechaza el acceso.
+// Esto va ANTES de UseHttpsRedirection() y de UseAuthentication(): corrige el
+// esquema (http/https) que ve el resto de la aplicación desde el principio.
+//
+// KnownNetworks y KnownProxies se vacían porque, por seguridad, ASP.NET Core
+// por defecto solo confía en el proxy si conoce su IP exacta. La IP interna
+// de Render no es fija, así que se le pide confiar en el encabezado
+// "X-Forwarded-*" que manda cualquier proxy delante de la aplicación (algo
+// seguro aquí, porque Render es el único que puede hablarle a la app).
+var forwardedHeadersOptions = new ForwardedHeadersOptions
+{
+    ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
+};
+forwardedHeadersOptions.KnownNetworks.Clear();
+forwardedHeadersOptions.KnownProxies.Clear();
+app.UseForwardedHeaders(forwardedHeadersOptions);
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
