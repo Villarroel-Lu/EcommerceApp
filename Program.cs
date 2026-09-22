@@ -56,9 +56,13 @@ app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
 
+// RUTA POR DEFECTO: al entrar a la raíz del sitio (adoptapatitas.onrender.com/)
+// se muestra directamente el CATÁLOGO de mascotas (Mascotas/Index), sin pedir
+// iniciar sesión. El login solo se le pide a la persona cuando quiere ADOPTAR.
+// (Antes era Account/Login, por eso el sitio abría en la pantalla de login.)
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Account}/{action=Login}/{id?}");
+    pattern: "{controller=Mascotas}/{action=Index}/{id?}");
 
 // Crear la base de datos y las tablas automáticamente si no existen (sin migraciones)
 using (var scope = app.Services.CreateScope())

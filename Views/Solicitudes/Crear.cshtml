@@ -3,27 +3,128 @@
     ViewData["Title"] = "Solicitud de adopción";
 }
 
-<div class="catalogo-full-ancho">
-    <div class="registro-panel mx-auto" style="position:static; box-shadow:0 10px 30px rgba(91,58,142,0.1); max-width:700px;">
+@* ============================================================
+   FORMULARIO DE ADOPCIÓN
+   Antes ocupaba todo el ancho de la pantalla ("catalogo-full-ancho").
+   Ahora es una tarjeta CENTRADA de 860px máximo, dividida en secciones
+   cortas, con la foto y el nombre de la mascota arriba y el botón
+   "Enviar solicitud" siempre a la vista al final.
+   Los estilos van aquí mismo (prefijo "sa-" = "solicitud adopción").
+   ============================================================ *@
+<style>
+    .sa-pagina { max-width: 860px; margin: 8px auto 40px; }
 
-        <h2>🐾 Solicitud de adopción</h2>
-        <p class="text-muted mb-2">
-            Estás solicitando adoptar a <strong>@Model.Mascota.Nombre</strong>. Estos datos
-            nos ayudan a verificar que serás un buen hogar para ella.
-        </p>
+    .sa-card {
+        overflow: hidden;
+        border-radius: 28px;
+        background-color: #fff;
+        box-shadow: 0 20px 60px rgba(91, 58, 142, 0.16);
+    }
 
-        <!-- enctype="multipart/form-data" es obligatorio porque el
-             formulario incluye archivos (fotos del carnet). -->
-        <form asp-action="Crear" method="post" enctype="multipart/form-data" class="form-adoptapatitas">
-            <!-- MascotaId va oculto: no lo edita el usuario, solo identifica
-                 a qué mascota corresponde esta solicitud. -->
+    /* Cabecera: foto redonda de la mascota + título */
+    .sa-cabecera {
+        display: flex;
+        align-items: center;
+        gap: 18px;
+        padding: 24px 36px;
+        border-bottom: 1px solid var(--color-rosa-claro);
+        background: linear-gradient(135deg, var(--color-rosa-claro), var(--color-crema));
+    }
+
+    .sa-cabecera-foto {
+        flex-shrink: 0;
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 4px solid #fff;
+        background-color: #fff;
+        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
+    }
+
+    .sa-cabecera-emoji {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2.4rem;
+    }
+
+    .sa-cabecera h2 {
+        margin: 0;
+        font-family: 'Quicksand', sans-serif;
+        font-weight: 700;
+        font-size: 1.5rem;
+        color: var(--color-primario);
+    }
+
+    .sa-cabecera p { margin: 4px 0 0; }
+
+    .sa-form { padding: 28px 36px 32px; }
+
+    /* Títulos de sección con línea rosada debajo */
+    .sa-seccion {
+        margin: 28px 0 14px;
+        padding-bottom: 6px;
+        border-bottom: 2px solid var(--color-rosa-claro);
+        font-family: 'Quicksand', sans-serif;
+        font-weight: 700;
+        color: var(--color-primario);
+    }
+
+    .sa-seccion.sa-primera { margin-top: 0; }
+
+    /* Cuadro destacado del motivo: es lo que Zoonosis evalúa */
+    .sa-motivo {
+        padding: 18px 20px;
+        border-radius: 16px;
+        background-color: var(--color-crema);
+        border: 1px solid var(--color-rosa-claro);
+    }
+
+    .sa-enviar { padding: 13px 20px; font-size: 1.05rem; }
+
+    @@media (max-width: 767px) {
+        .sa-cabecera { padding: 18px 20px; }
+        .sa-form { padding: 22px 20px 26px; }
+    }
+</style>
+
+<div class="sa-pagina">
+    <div class="sa-card">
+
+        @* ---------- Cabecera con la mascota ---------- *@
+        <div class="sa-cabecera">
+            @if (!string.IsNullOrEmpty(Model.Mascota.FotoUrl))
+            {
+                <img src="@Model.Mascota.FotoUrl" alt="Foto de @Model.Mascota.Nombre" class="sa-cabecera-foto" />
+            }
+            else
+            {
+                <div class="sa-cabecera-foto sa-cabecera-emoji">🐾</div>
+            }
+            <div>
+                <h2>Solicitud de adopción</h2>
+                <p class="text-muted">
+                    Estás solicitando adoptar a <strong>@Model.Mascota.Nombre</strong>.
+                    Estos datos nos ayudan a verificar que será un buen hogar.
+                </p>
+            </div>
+        </div>
+
+        @* enctype="multipart/form-data" es obligatorio porque el formulario
+           incluye archivos (fotos del carnet). *@
+        <form asp-action="Crear" method="post" enctype="multipart/form-data" class="form-adoptapatitas sa-form">
+            @* MascotaId va oculto: no lo edita el usuario, solo identifica
+               a qué mascota corresponde esta solicitud. *@
             <input type="hidden" asp-for="MascotaId" />
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
+            @* ---------- 1. Datos personales ----------
+               Nombres/Apellidos/Email ya vienen pre-llenados desde la cuenta
+               (ver SolicitudesController.Crear GET), pero siguen siendo
+               editables por si algo cambió. *@
+            <h6 class="sa-seccion sa-primera">👤 Tus datos</h6>
             <div class="row g-3">
-                <!-- Nombres/Apellidos/Email ya vienen pre-llenados desde la
-                     cuenta (ver SolicitudesController.Crear GET), pero
-                     siguen siendo editables por si algo cambió. -->
                 <div class="col-md-6">
                     <label asp-for="Nombres"></label>
                     <input asp-for="Nombres" class="form-control" oninput="this.value = this.value.replace(/[^a-zA-ZÀ-ÿ\s]/g, '')" />
@@ -35,9 +136,11 @@
                     <span asp-validation-for="Apellidos" class="text-danger"></span>
                 </div>
 
-                <div class="col-md-4">
+                <div class="col-md-3">
                     <label asp-for="Edad"></label>
-                    <input asp-for="Edad" type="number" min="18" max="60" class="form-control" />
+                    @* Se muestra vacío en vez de "0" para que la persona escriba su edad. *@
+                    <input asp-for="Edad" type="number" min="18" max="60" class="form-control"
+                           placeholder="18 a 60" value="@(Model.Edad == 0 ? "" : Model.Edad.ToString())" />
                     <span asp-validation-for="Edad" class="text-danger"></span>
                 </div>
                 <div class="col-md-4">
@@ -45,70 +148,111 @@
                     <input asp-for="Telefono" class="form-control" oninput="this.value = this.value.replace(/[^0-9]/g, '')" />
                     <span asp-validation-for="Telefono" class="text-danger"></span>
                 </div>
-                <div class="col-md-4">
+                <div class="col-md-5">
                     <label asp-for="Email"></label>
                     <input asp-for="Email" class="form-control" />
                     <span asp-validation-for="Email" class="text-danger"></span>
                 </div>
+            </div>
 
-                <div class="col-md-6">
+            @* ---------- 2. Domicilio y contacto ---------- *@
+            <h6 class="sa-seccion">🏠 Dónde vives y cómo contactarte</h6>
+            <div class="row g-3">
+                <div class="col-md-7">
                     <label asp-for="DondeVive"></label>
                     <input asp-for="DondeVive" class="form-control" placeholder="Zona / dirección" />
                     <span asp-validation-for="DondeVive" class="text-danger"></span>
                 </div>
-                <div class="col-md-6">
+                <div class="col-md-5">
                     <label asp-for="RedSocial"></label>
                     <input asp-for="RedSocial" class="form-control" placeholder="Ej: facebook.com/tuNombre" />
                     <span asp-validation-for="RedSocial" class="text-danger"></span>
                 </div>
+            </div>
 
-                <div class="col-md-6">
+            @* ---------- 3. Verificación de identidad ---------- *@
+            <h6 class="sa-seccion">🪪 Verificación de identidad</h6>
+            <p class="small text-muted mb-2">
+                Las fotos de tu carnet son obligatorias: se usan para verificar tu identidad antes de aprobar.
+            </p>
+            <div class="row g-3">
+                <div class="col-md-4">
                     <label asp-for="NumeroCarnet"></label>
                     <input asp-for="NumeroCarnet" class="form-control" />
                     <span asp-validation-for="NumeroCarnet" class="text-danger"></span>
                 </div>
-
-                <!-- Checkbox + textarea condicional: el detalle solo tiene
-                     sentido si marcó que sí tiene otras mascotas. Lo dejamos
-                     siempre visible por simplicidad (sin JS extra), pero
-                     es opcional igual. -->
-                <div class="col-md-6 d-flex align-items-center">
-                    <div class="form-check mt-4">
-                        <input asp-for="TieneOtrasMascotas" class="form-check-input" />
-                        <label asp-for="TieneOtrasMascotas" class="form-check-label"></label>
-                    </div>
-                </div>
-                <div class="col-12">
-                    <label asp-for="DetalleOtrasMascotas"></label>
-                    <input asp-for="DetalleOtrasMascotas" class="form-control" placeholder="Ej: un perro y un gato, ambos vacunados" />
-                </div>
-
-                <div class="col-12">
-                    <p class="mb-1 small text-muted">
-                        Fotos de tu carnet (obligatorias, para verificar tu identidad antes de aprobar).
-                    </p>
-                </div>
-                <div class="col-md-6">
+                <div class="col-md-4">
                     <label asp-for="FotoCarnetAnversoArchivo"></label>
                     <input asp-for="FotoCarnetAnversoArchivo" type="file" accept="image/*" class="form-control" />
                     <span asp-validation-for="FotoCarnetAnversoArchivo" class="text-danger"></span>
                 </div>
-                <div class="col-md-6">
+                <div class="col-md-4">
                     <label asp-for="FotoCarnetReversoArchivo"></label>
                     <input asp-for="FotoCarnetReversoArchivo" type="file" accept="image/*" class="form-control" />
                     <span asp-validation-for="FotoCarnetReversoArchivo" class="text-danger"></span>
                 </div>
+            </div>
 
-                <div class="col-12">
-                    <label asp-for="Motivo"></label>
-                    <textarea asp-for="Motivo" class="form-control" rows="3"
-                              placeholder="Cuéntanos por qué quieres adoptar (opcional)"></textarea>
+            @* ---------- 4. Otras mascotas ----------
+               El detalle solo tiene sentido si marcó que sí tiene otras
+               mascotas; se deja siempre visible por simplicidad (sin JS
+               extra) y es opcional. *@
+            <h6 class="sa-seccion">🐕 Otras mascotas en casa</h6>
+            <div class="row g-3 align-items-end">
+                <div class="col-md-4">
+                    <div class="form-check">
+                        <input asp-for="TieneOtrasMascotas" class="form-check-input" />
+                        <label asp-for="TieneOtrasMascotas" class="form-check-label"></label>
+                    </div>
+                </div>
+                <div class="col-md-8">
+                    <label asp-for="DetalleOtrasMascotas"></label>
+                    <input asp-for="DetalleOtrasMascotas" class="form-control" placeholder="Ej: un perro y un gato, ambos vacunados" />
                 </div>
             </div>
 
-            <button type="submit" class="btn btn-adoptapatitas-primario w-100 mt-4">Enviar solicitud</button>
+            @* ---------- 5. Motivo (OBLIGATORIO) ----------
+               Zoonosis evalúa esta respuesta para decidir la adopción.
+               - "required" y "minlength": el navegador no deja enviar si está
+                 vacío o muy corto.
+               - Además el servidor lo vuelve a comprobar (SolicitudesController),
+                 por si alguien se salta el navegador. *@
+            <h6 class="sa-seccion">💬 Cuéntanos tu motivo</h6>
+            <div class="sa-motivo">
+                <label for="Motivo">¿Por qué quieres adoptar a @(Model.Mascota.Nombre)? <span class="text-danger">*</span></label>
+                <p class="small text-muted mb-2">
+                    Es obligatorio: Zoonosis evaluará tu respuesta para decidir la adopción.
+                    Cuéntanos cómo es tu hogar y cómo lo cuidarás (mínimo 20 caracteres).
+                </p>
+                <textarea asp-for="Motivo" class="form-control" rows="4" required minlength="20" maxlength="500"
+                          placeholder="Ej: Vivo en una casa con patio, trabajo medio tiempo y tengo experiencia cuidando gatos..."></textarea>
+                <div class="d-flex justify-content-between mt-1">
+                    <span asp-validation-for="Motivo" class="text-danger"></span>
+                    <small id="contadorMotivo" class="text-muted ms-auto">0 / 500</small>
+                </div>
+            </div>
+
+            @* ---------- Botones ---------- *@
+            <div class="d-flex flex-wrap gap-2 mt-4">
+                <button type="submit" class="btn btn-adoptapatitas-primario sa-enviar flex-grow-1">💜 Enviar solicitud</button>
+                <a asp-controller="Mascotas" asp-action="Index" class="btn btn-adoptapatitas-outline sa-enviar">Cancelar</a>
+            </div>
         </form>
     </div>
 </div>
 
-@section Scripts { <partial name="_ValidationScriptsPartial" /> }
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+
+    @* Contador de caracteres del motivo (0 / 500). *@
+    <script>
+        (function () {
+            var caja = document.getElementById('Motivo');
+            var contador = document.getElementById('contadorMotivo');
+            if (!caja || !contador) return;
+            function actualizar() { contador.textContent = caja.value.length + ' / 500'; }
+            caja.addEventListener('input', actualizar);
+            actualizar();
+        })();
+    </script>
+}

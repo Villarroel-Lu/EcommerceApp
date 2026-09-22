@@ -81,6 +81,20 @@ namespace EcommerceApp.Controllers
             var usuario = await userManager.GetUserAsync(User);
             if (usuario == null) return RedirectToAction("Login", "Account");
 
+            // El motivo es OBLIGATORIO: Zoonosis evalúa esta respuesta para decidir
+            // la adopción. Se valida aquí (y no con [Required] en el modelo) a
+            // propósito: cambiar el modelo obligaría a modificar la base de datos
+            // (migración) y a arreglar las solicitudes viejas que no tienen motivo.
+            // El formulario también lo exige en el navegador; esto cubre el caso de
+            // que alguien se salte el navegador.
+            solicitud.Motivo = solicitud.Motivo?.Trim();
+            if (string.IsNullOrWhiteSpace(solicitud.Motivo))
+                ModelState.AddModelError(nameof(SolicitudAdopcion.Motivo),
+                    "Cuéntanos por qué quieres adoptar: Zoonosis evaluará tu respuesta.");
+            else if (solicitud.Motivo.Length < 20)
+                ModelState.AddModelError(nameof(SolicitudAdopcion.Motivo),
+                    "Cuéntanos un poco más (mínimo 20 caracteres).");
+
             if (!ModelState.IsValid)
             {
                 // Si algo falló (por ejemplo, no subió las fotos del

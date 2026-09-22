@@ -59,13 +59,19 @@
             </div>
         }
 
+        @* Antes "Solicitar adopción" era un <button> sin acción (no hacía nada).
+           Ahora es un enlace real al formulario de adopción. Para quien no tiene
+           sesión, el login lo devuelve luego a ese mismo formulario (returnUrl). *@
         @if (User.Identity!.IsAuthenticated && User.IsInRole("Adoptante"))
         {
-            <button class="btn btn-adoptapatitas-secundario">Solicitar adopción</button>
+            <a asp-controller="Solicitudes" asp-action="Crear" asp-route-mascotaId="@Model.Id"
+               class="btn btn-adoptapatitas-secundario">Solicitar adopción</a>
         }
         else if (!User.Identity!.IsAuthenticated)
         {
-            <a asp-controller="Account" asp-action="Login" class="btn btn-adoptapatitas-secundario">
+            <a asp-controller="Account" asp-action="Login"
+               asp-route-returnUrl="@Url.Action("Crear", "Solicitudes", new { mascotaId = Model.Id })"
+               class="btn btn-adoptapatitas-secundario">
                 Inicia sesión para adoptar
             </a>
         }

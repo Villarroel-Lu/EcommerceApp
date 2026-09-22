@@ -1,16 +1,28 @@
 ﻿@model EcommerceApp.Models.RegisterViewModel
 @{
     ViewData["Title"] = "Crear cuenta";
-    ViewData["OcultarNavbar"] = true;
+
+    // Misma plantilla especial que el login (sin navbar ni footer).
+    Layout = "_LayoutAuth";
 }
 
-<div class="login-page-wrapper">
-    <video class="login-bg-video" autoplay muted loop playsinline>
-        <source src="~/videos/login-fondo.mp4" type="video/mp4">
+@* Mismo fondo y mismo centrado que el login (clases "auth-*", bloque V10
+   de adoptapatitas.css). Antes el video apuntaba a ~/videos/login-fondo.mp4,
+   un archivo que no existe en el proyecto; ahora usa el mismo video del
+   login, así se ven iguales. *@
+<div class="auth-pantalla">
+    <video class="auth-bg-video" autoplay muted loop playsinline>
+        <source src="https://azselqmobzpcongydmbt.supabase.co/storage/v1/object/public/inicio/fondo%20patitas.mp4" type="video/mp4">
     </video>
-    <div class="login-bg-overlay"></div>
+    <div class="auth-bg-overlay"></div>
 
     <div class="registro-panel" style="max-width:480px;">
+
+        <a asp-controller="Mascotas" asp-action="Index"
+           class="small text-decoration-none d-inline-block mb-3" style="color:var(--color-primario);">
+            ← Volver a ver las mascotas
+        </a>
+
         <h2>🐾 Crear cuenta</h2>
         <p class="text-muted mb-4">
             Solo lo básico por ahora. Cuando quieras adoptar, te pediremos
@@ -18,7 +30,10 @@
         </p>
 
         <form asp-action="Register" method="post" class="form-adoptapatitas">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            @* Campo oculto: a dónde volver después de registrarse (lo llena
+               Account/Register cuando la persona venía de tocar "Adoptar"). *@
+            <input type="hidden" name="returnUrl" value="@ViewData["ReturnUrl"]" />
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-2"></div>
 
             <label asp-for="Nombre"></label>
             <input asp-for="Nombre" class="form-control mb-3" oninput="this.value = this.value.replace(/[^a-zA-ZÀ-ÿ\s]/g, '')" />
@@ -33,7 +48,13 @@
             <span asp-validation-for="Email" class="text-danger"></span>
 
             <label asp-for="Password"></label>
-            <input asp-for="Password" class="form-control mb-3" />
+            <input asp-for="Password" class="form-control" />
+            @* Ayuda visible: el sistema exige estas reglas (son las de ASP.NET
+               Identity). Si no se avisan antes, la persona se entera recién
+               cuando el registro falla. *@
+            <div class="form-text mb-3">
+                Mínimo 6 caracteres, con una mayúscula, una minúscula, un número y un símbolo (ej: Patitas#2026).
+            </div>
             <span asp-validation-for="Password" class="text-danger"></span>
 
             <label asp-for="ConfirmPassword"></label>
@@ -43,7 +64,7 @@
             <button type="submit" class="btn btn-adoptapatitas-primario w-100 mt-4">Registrarme</button>
         </form>
 
-        <a asp-action="Login" class="btn btn-adoptapatitas-outline w-100 mt-2">Ya tengo cuenta</a>
+        <a asp-action="Login" asp-route-returnUrl="@ViewData["ReturnUrl"]" class="btn btn-adoptapatitas-outline w-100 mt-2">Ya tengo cuenta</a>
     </div>
 </div>
 

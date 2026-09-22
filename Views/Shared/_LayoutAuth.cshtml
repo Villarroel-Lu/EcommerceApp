@@ -1,0 +1,35 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - AdoptaPatitas</title>
+
+    @* Mismas fuentes y estilos que el resto del sitio (_Layout.cshtml). *@
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;600;700&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    @* "asp-append-version" agrega un código a la URL que cambia cada vez que
+       modificas el CSS: así el navegador NUNCA se queda con una versión vieja. *@
+    <link rel="stylesheet" href="~/css/adoptapatitas.css" asp-append-version="true" />
+</head>
+
+@* ============================================================
+   LAYOUT SOLO PARA LOGIN Y REGISTRO
+   Es una "plantilla" aparte de _Layout.cshtml, pero SIN barra de
+   navegación, SIN footer y SIN el <div class="container">.
+   ¿Por qué? Esos tres elementos eran los que descentraban el login:
+   el footer y el container ocupaban espacio y hacían aparecer la
+   barra de scroll, y el panel quedaba pegado arriba. Aquí la página
+   es solo: fondo de video + panel centrado en la pantalla.
+   Cada vista lo activa con:  Layout = "_LayoutAuth";
+   ============================================================ *@
+<body>
+    @RenderBody()
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

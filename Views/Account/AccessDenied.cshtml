@@ -1,0 +1,31 @@
+﻿@{
+    ViewData["Title"] = "Acceso denegado";
+}
+
+@* Pantalla amable para cuando la cuenta no tiene permiso para una sección.
+   Usa las mismas clases "estado-vacio" del catálogo cuando no hay resultados. *@
+<div class="estado-vacio text-center my-5 mx-auto" style="max-width:560px;">
+    <div class="estado-vacio-icono">🔒</div>
+    <h3>No tienes permiso para entrar aquí</h3>
+    <p class="text-muted">
+        Para pedir una adopción necesitas iniciar sesión con una cuenta de
+        <strong>Adoptante</strong>. Si crees que es un error, cierra sesión y
+        vuelve a entrar con tu cuenta.
+    </p>
+
+    <div class="d-flex flex-wrap gap-2 justify-content-center">
+        <a asp-controller="Mascotas" asp-action="Index" class="btn btn-adoptapatitas-primario">Volver a las mascotas</a>
+
+        @if (User.Identity!.IsAuthenticated)
+        {
+            @* Cerrar sesión va por POST (igual que en la barra superior). *@
+            <form asp-controller="Account" asp-action="Logout" method="post">
+                <button type="submit" class="btn btn-adoptapatitas-outline">Cerrar sesión</button>
+            </form>
+        }
+        else
+        {
+            <a asp-controller="Account" asp-action="Login" class="btn btn-adoptapatitas-outline">Iniciar sesión</a>
+        }
+    </div>
+</div>
