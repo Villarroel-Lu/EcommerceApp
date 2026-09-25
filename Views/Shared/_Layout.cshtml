@@ -28,35 +28,49 @@
     <link rel="stylesheet" href="~/EcommerceApp.styles.css" asp-append-version="true" />
     @* asp-append-version: el navegador nunca se queda con una versión vieja del CSS. *@
     <link rel="stylesheet" href="~/css/adoptapatitas.css" asp-append-version="true" />
+
+    <!-- Ícono de la pestaña del navegador, hecho a partir de tu logo nuevo. -->
+    <link rel="icon" type="image/x-icon" href="~/favicon.ico" />
+
+    <link rel="stylesheet" href="~/css/asistente-voz.css" asp-append-version="true" />
+
+    @* ===== PWA ===== *@
+    <link rel="manifest" href="~/manifest.json" />
+    <meta name="theme-color" content="#5B3A8E" />
+    <!-- Para que "Agregar a inicio" funcione en iPhone/iPad, que no sigue
+         del todo el estándar de manifest.json. -->
+    <link rel="apple-touch-icon" href="~/images/icon-192.png" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-title" content="AdoptaPatitas" />
 </head>
 
 <body>
 
-    <!-- Barra de navegación superior. Una vista puede ocultarla poniendo
+<!-- Barra de navegación superior. Una vista puede ocultarla poniendo
      ViewData["OcultarNavbar"] = true en su bloque de código de arriba
      (Login y Registro ya no lo necesitan: usan _LayoutAuth.cshtml).
      En cualquier otra página la condición es false y la barra se muestra. -->
-    @if (ViewData["OcultarNavbar"] as bool? != true)
-    {
-        @* BARRA FIJA ARRIBA: la clase "sticky-top" va en el <header> y NO en el <nav>.
+@if (ViewData["OcultarNavbar"] as bool? != true)
+{
+    @* BARRA FIJA ARRIBA: la clase "sticky-top" va en el <header> y NO en el <nav>.
        "sticky" solo funciona dentro de la caja de su elemento padre. Estando en el <nav>,
        su padre era el <header>, que mide lo mismo que la barra: no había por dónde
        "pegarse" y la barra se iba con el scroll, y con ella los botones de Iniciar
        sesión / Registrarme al bajar por el catálogo. Con la clase en el <header>, su
        padre pasa a ser el <body> (que sí mide toda la página) y la barra se queda
        siempre visible arriba. *@
-        <header class="sticky-top">
-            <nav class="navbar navbar-expand-lg navbar-adoptapatitas py-3" id="navbarPrincipal">
-                <div class="container">
+    <header class="sticky-top">
+        <nav class="navbar navbar-expand-lg navbar-adoptapatitas py-3" id="navbarPrincipal">
+            <div class="container">
 
-                    <!-- Marca: patita + nombre, siempre lleva al catálogo
+                <!-- Marca: patita + nombre, siempre lleva al catálogo
                      de mascotas al hacer clic (como el logo de cualquier sitio) -->
-                    <a class="navbar-brand d-flex align-items-center gap-2" asp-controller="Mascotas" asp-action="Index">
-                        <span style="font-size:1.6rem;">🐾</span>
-                        <span>Adopta<span style="color:var(--color-secundario);">Patitas</span></span>
-                    </a>
+                <a class="navbar-brand d-flex align-items-center gap-2" asp-controller="Mascotas" asp-action="Index">
+                    <span style="font-size:1.6rem;">🐾</span>
+                    <span>Adopta<span style="color:var(--color-secundario);">Patitas</span></span>
+                </a>
 
-                    @* ===== ZONA DE CUENTA (arriba a la derecha) =====
+                @* ===== ZONA DE CUENTA (arriba a la derecha) =====
                    Va FUERA del menú desplegable (el "collapse") a propósito: así
                    el botón "Iniciar sesión" se ve SIEMPRE arriba a la derecha,
                    también en el celular (antes quedaba escondido dentro del
@@ -64,91 +78,90 @@
                    - "ms-auto": en celular la empuja a la derecha.
                    - "order-lg-last": en pantalla grande la manda al final de la
                      barra (después de los links centrales). *@
-                    <div class="d-flex align-items-center gap-2 ms-auto order-lg-last">
-                        @if (User.Identity!.IsAuthenticated)
-                        {
-                            <!-- Con sesión iniciada: botón con el nombre y un menú
+                <div class="d-flex align-items-center gap-2 ms-auto order-lg-last">
+                    @if (User.Identity!.IsAuthenticated)
+                    {
+                        <!-- Con sesión iniciada: botón con el nombre y un menú
                              desplegable con las opciones según el rol. -->
-                            <div class="dropdown">
-                                <button class="btn btn-adoptapatitas-outline btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                    👤 <span class="nav-usuario-nombre">@User.Identity.Name</span>
-                                </button>
-                                <ul class="dropdown-menu dropdown-menu-end">
+                        <div class="dropdown">
+                            <button class="btn btn-adoptapatitas-outline btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                👤 <span class="nav-usuario-nombre">@User.Identity.Name</span>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end">
 
-                                    <!-- Solo el rol Zoonosis ve estos tres
+                                <!-- Solo el rol Zoonosis ve estos tres
                                      links: administrar mascotas, revisar
                                      las solicitudes de adopción pendientes,
                                      y ver la lista de adoptantes registrados. -->
-                                    @if (User.IsInRole("Zoonosis"))
-                                    {
-                                        <li><a class="dropdown-item" asp-controller="Mascotas" asp-action="Administrar">Panel de administración</a></li>
-                                        <li><a class="dropdown-item" asp-controller="Solicitudes" asp-action="Revisar">Revisar solicitudes</a></li>
-                                        <li><a class="dropdown-item" asp-controller="Adoptantes" asp-action="Index">Adoptantes registrados</a></li>
-                                        <li><a class="dropdown-item" asp-controller="Reportes" asp-action="Index">📄 Reportes</a></li>
-                                        <li><a class="dropdown-item" asp-controller="Reportes" asp-action="Index">📊 Reportes</a></li>
-                                    }
+                                @if (User.IsInRole("Zoonosis"))
+                                {
+                                    <li><a class="dropdown-item" asp-controller="Mascotas" asp-action="Administrar">Panel de administración</a></li>
+                                    <li><a class="dropdown-item" asp-controller="Solicitudes" asp-action="Revisar">Revisar solicitudes</a></li>
+                                    <li><a class="dropdown-item" asp-controller="Adoptantes" asp-action="Index">Adoptantes registrados</a></li>
+                                    <li><a class="dropdown-item" asp-controller="Reportes" asp-action="Index">📄 Reportes</a></li>
+                                }
 
-                                    <!-- Solo el rol Adoptante ve este link:
+                                <!-- Solo el rol Adoptante ve este link:
                                      el estado de las solicitudes que
                                      él mismo hizo. -->
-                                    @if (User.IsInRole("Adoptante"))
-                                    {
-                                        <li><a class="dropdown-item" asp-controller="Solicitudes" asp-action="MisSolicitudes">Mis solicitudes</a></li>
-                                    }
+                                @if (User.IsInRole("Adoptante"))
+                                {
+                                    <li><a class="dropdown-item" asp-controller="Solicitudes" asp-action="MisSolicitudes">Mis solicitudes</a></li>
+                                }
 
-                                    <!-- Cerrar sesión: va como un <form> con
+                                <!-- Cerrar sesión: va como un <form> con
                                      POST (no un simple link) porque
                                      cerrar sesión modifica el estado del
                                      servidor, y eso siempre debe ir por
                                      POST, no por GET. -->
-                                    <li>
-                                        <form asp-controller="Account" asp-action="Logout" method="post" class="px-3">
-                                            <button type="submit" class="btn btn-sm btn-adoptapatitas-outline w-100 mt-1">Cerrar sesión</button>
-                                        </form>
-                                    </li>
-                                </ul>
-                            </div>
-                        }
-                        else
-                        {
-                            <!-- Sin sesión iniciada: "Iniciar sesión" siempre visible.
+                                <li>
+                                    <form asp-controller="Account" asp-action="Logout" method="post" class="px-3">
+                                        <button type="submit" class="btn btn-sm btn-adoptapatitas-outline w-100 mt-1">Cerrar sesión</button>
+                                    </form>
+                                </li>
+                            </ul>
+                        </div>
+                    }
+                    else
+                    {
+                        <!-- Sin sesión iniciada: "Iniciar sesión" siempre visible.
                              "Registrarme" se oculta en pantallas muy chicas (d-none
                              d-md-inline-block) para que todo quepa en una línea;
                              en el celular se llega a "Crear cuenta" desde la
                              propia pantalla de login. -->
-                            <a class="btn btn-adoptapatitas-primario btn-sm" asp-controller="Account" asp-action="Login">Iniciar sesión</a>
-                            <a class="btn btn-adoptapatitas-outline btn-sm d-none d-md-inline-block" asp-controller="Account" asp-action="Register">Registrarme</a>
-                        }
-                    </div>
+                        <a class="btn btn-adoptapatitas-primario btn-sm" asp-controller="Account" asp-action="Login">Iniciar sesión</a>
+                        <a class="btn btn-adoptapatitas-outline btn-sm d-none d-md-inline-block" asp-controller="Account" asp-action="Register">Registrarme</a>
+                    }
+                </div>
 
-                    <!-- Botón "hamburguesa" que aparece en pantallas chicas
+                <!-- Botón "hamburguesa" que aparece en pantallas chicas
                      (celular) para desplegar el menú — es puro Bootstrap,
                      no necesita JavaScript propio. -->
-                    <button class="navbar-toggler ms-2" type="button" data-bs-toggle="collapse" data-bs-target="#navbarAdopta">
-                        <span class="navbar-toggler-icon"></span>
-                    </button>
+                <button class="navbar-toggler ms-2" type="button" data-bs-toggle="collapse" data-bs-target="#navbarAdopta">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
 
-                    <div class="collapse navbar-collapse" id="navbarAdopta">
+                <div class="collapse navbar-collapse" id="navbarAdopta">
 
-                        @* Links centrales: los mismos para cualquier persona, tenga
+                    @* Links centrales: los mismos para cualquier persona, tenga
                        sesión iniciada o no. Se quitó "Inicio" porque ahora la
                        página principal ES el catálogo (link "Mascotas"). *@
-                        <ul class="navbar-nav mx-auto gap-lg-3">
-                            <li class="nav-item">
-                                <a class="nav-link nav-link-adoptapatitas" asp-controller="Mascotas" asp-action="Index">Mascotas</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link nav-link-adoptapatitas" asp-controller="Home" asp-action="Privacy">Cómo adoptar</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link nav-link-adoptapatitas" asp-controller="Home" asp-action="Nosotros">Nosotros</a>
-                            </li>
-                        </ul>
-                    </div>
+                    <ul class="navbar-nav mx-auto gap-lg-3">
+                        <li class="nav-item">
+                            <a class="nav-link nav-link-adoptapatitas" asp-controller="Mascotas" asp-action="Index">Mascotas</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link nav-link-adoptapatitas" asp-controller="Home" asp-action="Privacy">Cómo adoptar</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link nav-link-adoptapatitas" asp-controller="Home" asp-action="Nosotros">Nosotros</a>
+                        </li>
+                    </ul>
                 </div>
-            </nav>
-        </header>
-    }
+            </div>
+        </nav>
+    </header>
+}
     @* RenderBody() es donde se inserta el contenido de CADA vista
        individual (Index.cshtml, Details.cshtml, etc.) — este archivo
        es el "molde" que envuelve a todas las páginas del sitio.
@@ -165,11 +178,77 @@
         </main>
     </div>
 
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2026 - EcommerceApp - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+    @* Footer con la marca real (antes decía "EcommerceApp", el nombre del
+       proyecto base, y el link decía "Privacy" en inglés en vez de
+       "Cómo adoptar", que es lo que esa página realmente contiene). *@
+    @* ============================================================
+       FOOTER — 4 columnas (marca, explorar, cuenta, contacto) más una
+       barra final con el copyright. Los datos de contacto (teléfono y
+       correo) son los que diste; no hay dirección ni redes sociales
+       todavía, así que esas partes se dejaron fuera a propósito, no
+       por error.
+       ============================================================ *@
+    <footer class="footer-adoptapatitas">
+        <div class="container footer-grid">
+
+            <!-- Columna 1: marca -->
+            <div class="footer-col footer-marca">
+                <div class="footer-logo">
+                    🐾 <strong>Adopta<span style="color:var(--color-secundario);">Patitas</span></strong>
+                </div>
+                <p class="footer-tagline">Encuentra un amigo, cambia una vida. Adopta, no compres.</p>
+            </div>
+
+            <!-- Columna 2: Explorar -->
+            <div class="footer-col">
+                <h6>Explorar</h6>
+                <a asp-controller="Mascotas" asp-action="Index">Mascotas</a>
+                <a asp-controller="Home" asp-action="Privacy">Cómo adoptar</a>
+                <a asp-controller="Home" asp-action="Nosotros">Nosotros</a>
+            </div>
+
+            <!-- Columna 3: Cuenta (cambia según quién esté mirando, igual
+                 que el menú de arriba: no tiene sentido invitar a alguien
+                 que ya tiene sesión a "Crear cuenta"). -->
+            <div class="footer-col">
+                <h6>Cuenta</h6>
+                @if (!User.Identity!.IsAuthenticated)
+                {
+                    <a asp-controller="Account" asp-action="Login">Iniciar sesión</a>
+                    <a asp-controller="Account" asp-action="Register">Crear cuenta</a>
+                }
+                else if (User.IsInRole("Zoonosis"))
+                {
+                    <a asp-controller="Mascotas" asp-action="Administrar">Panel de administración</a>
+                    <a asp-controller="Solicitudes" asp-action="Revisar">Revisar solicitudes</a>
+                    <a asp-controller="Reportes" asp-action="Index">Reportes</a>
+                }
+                else if (User.IsInRole("Adoptante"))
+                {
+                    <a asp-controller="Solicitudes" asp-action="MisSolicitudes">Mis solicitudes</a>
+                }
+            </div>
+
+            <!-- Columna 4: Contacto -->
+            <div class="footer-col">
+                <h6>Contacto</h6>
+                <a href="mailto:adoptapatitas.cochabamba@gmail.com">✉️ adoptapatitas.cochabamba@gmail.com</a>
+                <a href="tel:+59165322231">📞 65322231</a>
+                <span class="footer-ubicacion">📍 Cochabamba, Bolivia</span>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <div class="container d-flex flex-wrap justify-content-between gap-2">
+                <span>&copy; 2026 AdoptaPatitas. Todos los derechos reservados.</span>
+                <a asp-controller="Home" asp-action="Privacy">Cómo adoptar</a>
+            </div>
         </div>
     </footer>
+
+    @* Asistente de voz: NO se muestra en Login/Register porque esas
+       vistas usan _LayoutAuth.cshtml, no este archivo. *@
+    <partial name="_AsistenteVoz" />
 
     <!-- Scripts al final del <body> (no en el <head>) es buena práctica:
          así el HTML y el CSS ya cargaron antes de que el navegador
@@ -177,6 +256,23 @@
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="~/js/asistente-voz.js" asp-append-version="true"></script>
+
+    @* Registro del Service Worker (PWA): permite instalar el sitio y
+       muestra una página de "sin conexión" si se pierde internet. No
+       guarda mascotas ni datos de sesión en caché, solo archivos
+       estáticos (CSS, JS, logo) — ver wwwroot/service-worker.js. *@
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function () {
+                navigator.serviceWorker.register('/service-worker.js').catch(function () {
+                    // Si falla el registro (por ejemplo, en desarrollo sin
+                    // HTTPS), el sitio sigue funcionando normal, solo sin
+                    // la parte de "instalar" / "sin conexión".
+                });
+            });
+        }
+    </script>
 
     <!-- Cada vista puede definir su propia sección "Scripts" (por ejemplo,
          para cargar el script de validación de un formulario). Si esa

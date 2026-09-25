@@ -1205,3 +1205,607 @@ body {
 .modal-mascota-ficha strong {
     font-size: 0.95rem;
 }
+/* ============================================================
+   V12 - HERO del catálogo y FOOTER de la marca
+   (pegar AL FINAL de wwwroot/css/adoptapatitas.css; no se borra
+   nada de lo anterior)
+   ============================================================ */
+
+/* --- Hero grande al entrar (solo para quien no tiene sesión) --- */
+.hero-catalogo {
+    padding: 40px 36px;
+    margin-bottom: 20px;
+    border-radius: 24px;
+    color: #fff;
+    text-align: center;
+    background: linear-gradient(135deg, var(--color-primario), var(--color-secundario));
+}
+
+    .hero-catalogo h1 {
+        margin-bottom: 10px;
+        font-family: 'Quicksand', sans-serif;
+        font-weight: 700;
+        font-size: 2.1rem;
+    }
+
+    .hero-catalogo p {
+        max-width: 560px;
+        margin: 0 auto 20px;
+        font-size: 1.05rem;
+        opacity: 0.95;
+    }
+
+/* El botón "Crea tu cuenta" del hero necesita ser blanco (no morado)
+   porque va sobre un fondo de color, a diferencia de donde normalmente
+   se usa btn-adoptapatitas-outline (sobre fondo blanco). */
+.hero-catalogo-btn.btn-adoptapatitas-outline {
+    color: #fff;
+    border-color: #fff;
+}
+
+    .hero-catalogo-btn.btn-adoptapatitas-outline:hover {
+        background-color: #fff;
+        color: var(--color-primario);
+    }
+
+@media (max-width: 767px) {
+    .hero-catalogo {
+        padding: 28px 20px;
+    }
+
+        .hero-catalogo h1 {
+            font-size: 1.6rem;
+        }
+}
+
+/* --- Footer --- */
+.footer-adoptapatitas {
+    margin-top: 40px;
+    padding: 22px 0;
+    background-color: var(--color-crema);
+    border-top: 1px solid var(--color-rosa-claro);
+    font-size: 0.9rem;
+    color: var(--color-primario);
+}
+
+    .footer-adoptapatitas a {
+        color: var(--color-primario);
+        text-decoration: none;
+    }
+
+        .footer-adoptapatitas a:hover {
+            text-decoration: underline;
+        }
+/* ============================================================
+   V13 - FOOTER en columnas (marca, explorar, cuenta, contacto)
+   (pegar AL FINAL de wwwroot/css/adoptapatitas.css; reemplaza en
+   el navegador a las reglas viejas de ".footer-adoptapatitas" del
+   bloque V12, porque las reglas de más abajo en el archivo ganan)
+   ============================================================ */
+
+.footer-adoptapatitas {
+    margin-top: 40px;
+    background-color: var(--color-crema);
+    border-top: 1px solid var(--color-rosa-claro);
+    font-size: 0.9rem;
+}
+
+.footer-grid {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr 1fr 1.3fr;
+    gap: 24px;
+    padding: 36px 0 28px;
+}
+
+.footer-col h6 {
+    margin-bottom: 12px;
+    font-family: 'Quicksand', sans-serif;
+    font-weight: 700;
+    font-size: 0.8rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--color-primario);
+}
+
+.footer-col a,
+.footer-ubicacion {
+    display: block;
+    margin-bottom: 8px;
+    color: #6c6677;
+    text-decoration: none;
+}
+
+    .footer-col a:hover {
+        color: var(--color-primario);
+        text-decoration: underline;
+    }
+
+.footer-logo {
+    font-size: 1.15rem;
+    margin-bottom: 8px;
+}
+
+.footer-tagline {
+    max-width: 240px;
+    color: #6c6677;
+    font-size: 0.85rem;
+}
+
+.footer-bottom {
+    padding: 14px 0;
+    border-top: 1px solid var(--color-rosa-claro);
+    color: #8a8494;
+    font-size: 0.82rem;
+}
+
+    .footer-bottom a {
+        color: #8a8494;
+    }
+
+/* Celular: las 4 columnas se apilan en una sola */
+@media (max-width: 767px) {
+    .footer-grid {
+        grid-template-columns: 1fr;
+        gap: 22px;
+        padding: 28px 0 20px;
+    }
+}
+/* ============================================================
+   V14 - HERO en 2 columnas (título grande a color + mascota
+   destacada). Reemplaza visualmente al Hero simple del bloque V12
+   (esas reglas de ".hero-catalogo" siguen ahí pero ya no se usan
+   con esta estructura nueva; no hace falta borrarlas).
+   (pegar AL FINAL de wwwroot/css/adoptapatitas.css)
+   ============================================================ */
+
+/* Scroll suave: al tocar "Ver mascotas disponibles" (que apunta a
+   #catalogo-grid), la página baja deslizándose en vez de saltar de golpe. */
+html {
+    scroll-behavior: smooth;
+}
+
+.hero-catalogo {
+    display: grid;
+    grid-template-columns: 1.1fr 0.9fr;
+    gap: 36px;
+    align-items: center;
+    padding: 36px 8px 44px;
+    margin-bottom: 8px;
+}
+
+    /* Si no hay ninguna mascota disponible, el texto ocupa todo el
+       ancho (no queda un hueco vacío donde iría la tarjeta). */
+    .hero-catalogo.hero-sin-destacada {
+        grid-template-columns: 1fr;
+        text-align: center;
+    }
+
+        .hero-catalogo.hero-sin-destacada .hero-botones {
+            justify-content: center;
+        }
+
+/* --- Columna izquierda: texto --- */
+.hero-pastilla {
+    display: inline-block;
+    padding: 6px 16px;
+    margin-bottom: 18px;
+    border-radius: 50px;
+    background-color: var(--color-menta);
+    color: var(--color-primario);
+    font-family: 'Quicksand', sans-serif;
+    font-weight: 700;
+    font-size: 0.85rem;
+}
+
+.hero-titulo {
+    margin: 0 0 18px;
+    font-family: 'Quicksand', sans-serif;
+    font-weight: 700;
+    font-size: 2.8rem;
+    line-height: 1.15;
+}
+
+.hero-linea {
+    display: block;
+}
+
+.hero-linea-1 {
+    color: var(--color-primario);
+}
+
+.hero-linea-2 {
+    color: var(--color-secundario);
+}
+
+.hero-linea-3 {
+    color: #3AA982;
+}
+/* verde menta oscurecido, para que se lea bien */
+
+.hero-subtitulo {
+    max-width: 480px;
+    margin-bottom: 26px;
+    font-size: 1.08rem;
+    color: #6c6677;
+}
+
+    .hero-subtitulo strong {
+        color: var(--color-primario);
+    }
+
+.hero-botones {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+}
+
+/* --- Columna derecha: mascota destacada --- */
+.hero-destacada {
+    max-width: 340px;
+    margin: 0 auto;
+    border-radius: 24px;
+    overflow: hidden;
+    background-color: var(--color-blanco);
+    box-shadow: 0 24px 60px rgba(91, 58, 142, 0.20);
+}
+
+.hero-destacada-foto {
+    position: relative;
+    height: 300px;
+    background-color: var(--color-rosa-claro);
+}
+
+    .hero-destacada-foto img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+.hero-destacada-sin-foto {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    font-size: 4.5rem;
+}
+
+/* Etiqueta flotando sobre la esquina de la foto */
+.hero-destacada-badge {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    padding: 6px 14px;
+    border-radius: 50px;
+    background-color: var(--color-blanco);
+    color: var(--color-primario);
+    font-family: 'Quicksand', sans-serif;
+    font-weight: 700;
+    font-size: 0.78rem;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+}
+
+.hero-destacada-info {
+    padding: 18px 20px 20px;
+}
+
+    .hero-destacada-info h5 {
+        margin-bottom: 8px;
+        font-family: 'Quicksand', sans-serif;
+        font-weight: 700;
+        color: var(--color-primario);
+    }
+
+.hero-destacada-tags {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 4px;
+}
+
+.hero-destacada-ubicacion {
+    font-size: 0.85rem;
+    color: #6c6677;
+}
+
+/* Celular / tablet: una sola columna, foto arriba, texto centrado */
+@media (max-width: 991px) {
+    .hero-catalogo {
+        grid-template-columns: 1fr;
+        text-align: center;
+        padding: 28px 4px 32px;
+    }
+
+    .hero-titulo {
+        font-size: 2.1rem;
+    }
+
+    .hero-subtitulo {
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .hero-botones {
+        justify-content: center;
+    }
+
+    .hero-destacada {
+        margin-top: 8px;
+    }
+}
+/* ============================================================
+   V16 - HERO más grande, fondo pastel legible, foto cuadrada y
+   carrusel de mascotas destacadas
+   (pegar AL FINAL de wwwroot/css/adoptapatitas.css, DESPUÉS del
+   bloque V14, para que estas reglas ganen)
+   ============================================================ */
+
+/* --- Arregla el problema de contraste -----------------------------
+   Una regla vieja (bloque V12, de la primera versión del Hero) le
+   había puesto fondo morado-rosado saturado y texto blanco a
+   ".hero-catalogo". El título de colores de la versión nueva (V14)
+   quedaba encima de ESE MISMO morado/rosado, casi invisible. Aquí se
+   reemplaza por un degradado pastel bien suave, para que el título
+   a colores se lea perfecto. */
+.hero-catalogo {
+    position: relative;
+    overflow: hidden;
+    display: grid;
+    grid-template-columns: 1.1fr 0.9fr;
+    gap: 36px;
+    align-items: center;
+    min-height: 74vh;
+    padding: 48px 6vw;
+    margin-bottom: 8px;
+    border-radius: 0 0 32px 32px;
+    color: inherit; /* ya NO blanco a la fuerza: cada texto usa su propio color */
+    text-align: left; /* ya NO centrado a la fuerza */
+    background: linear-gradient(135deg, var(--color-crema) 0%, var(--color-rosa-claro) 55%, var(--color-menta) 100%);
+}
+
+    /* Un par de círculos grandes y difuminados de fondo, como decoración
+   (mismo recurso que ya usas en el panel de login), para que el Hero
+   no se sienta un bloque de color plano. */
+    .hero-catalogo::before,
+    .hero-catalogo::after {
+        content: "";
+        position: absolute;
+        border-radius: 50%;
+        z-index: 0;
+        filter: blur(2px);
+    }
+
+    .hero-catalogo::before {
+        width: 260px;
+        height: 260px;
+        top: -80px;
+        left: -60px;
+        background: rgba(217, 91, 145, 0.18); /* rosado */
+    }
+
+    .hero-catalogo::after {
+        width: 320px;
+        height: 320px;
+        bottom: -120px;
+        right: 8%;
+        background: rgba(91, 58, 142, 0.12); /* morado */
+    }
+
+    .hero-catalogo.hero-sin-destacada {
+        grid-template-columns: 1fr;
+        text-align: center;
+        min-height: auto;
+    }
+
+        .hero-catalogo.hero-sin-destacada .hero-botones {
+            justify-content: center;
+        }
+
+.hero-texto {
+    position: relative;
+    z-index: 1;
+}
+
+.hero-pastilla {
+    display: inline-block;
+    padding: 7px 18px;
+    margin-bottom: 20px;
+    border-radius: 50px;
+    background-color: var(--color-blanco);
+    color: var(--color-primario);
+    font-family: 'Quicksand', sans-serif;
+    font-weight: 700;
+    font-size: 0.85rem;
+    box-shadow: 0 4px 14px rgba(91, 58, 142, 0.12);
+}
+
+.hero-titulo {
+    margin: 0 0 20px;
+    font-family: 'Quicksand', sans-serif;
+    font-weight: 700;
+    font-size: 3.2rem;
+    line-height: 1.15;
+}
+
+.hero-linea {
+    display: block;
+}
+
+.hero-linea-1 {
+    color: var(--color-primario);
+}
+
+.hero-linea-2 {
+    color: var(--color-secundario);
+}
+
+.hero-linea-3 {
+    color: #2F9E75;
+}
+/* verde bien oscurecido: se lee sobre el fondo pastel */
+
+.hero-subtitulo {
+    max-width: 480px;
+    margin-bottom: 30px;
+    font-size: 1.12rem;
+    color: #4a4453; /* gris morado oscuro: contraste alto sobre el pastel */
+}
+
+    .hero-subtitulo strong {
+        color: var(--color-primario);
+    }
+
+.hero-botones {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+}
+
+/* --- Tarjeta destacada: ahora cuadrada de verdad y con carrusel --- */
+.hero-destacada-wrapper {
+    position: relative;
+    z-index: 1;
+    max-width: 360px;
+    margin: 0 auto;
+}
+
+    /* Las tarjetas se apilan EXACTAMENTE una sobre otra (position: absolute)
+   dentro de este contenedor "fantasma" que solo reserva el espacio
+   (aspect-ratio la vuelve cuadrada más el alto de la tarjetita de info). */
+    .hero-destacada-wrapper::before {
+        content: "";
+        display: block;
+        padding-top: 128%; /* alto aproximado: foto cuadrada + tarjeta de info */
+    }
+
+.hero-destacada-slide {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.6s ease;
+}
+
+    .hero-destacada-slide.activa {
+        opacity: 1;
+        visibility: visible;
+    }
+
+.hero-destacada {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    border-radius: 24px;
+    overflow: hidden;
+    background-color: var(--color-blanco);
+    box-shadow: 0 24px 60px rgba(91, 58, 142, 0.22);
+}
+
+.hero-destacada-foto {
+    position: relative;
+    aspect-ratio: 1 / 1; /* CUADRADA, sin importar el tamaño de pantalla */
+    background-color: var(--color-rosa-claro);
+}
+
+    .hero-destacada-foto img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+.hero-destacada-sin-foto {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    font-size: 4.5rem;
+}
+
+.hero-destacada-badge {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    padding: 6px 14px;
+    border-radius: 50px;
+    background-color: var(--color-blanco);
+    color: var(--color-primario);
+    font-family: 'Quicksand', sans-serif;
+    font-weight: 700;
+    font-size: 0.78rem;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+}
+
+.hero-destacada-info {
+    padding: 18px 20px 20px;
+}
+
+    .hero-destacada-info h5 {
+        margin-bottom: 8px;
+        font-family: 'Quicksand', sans-serif;
+        font-weight: 700;
+        color: var(--color-primario);
+    }
+
+.hero-destacada-tags {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 4px;
+}
+
+.hero-destacada-ubicacion {
+    font-size: 0.85rem;
+    color: #6c6677;
+}
+
+/* Puntitos del carrusel (como en cualquier galería de fotos) */
+.hero-destacada-puntos {
+    position: absolute;
+    bottom: -26px;
+    left: 0;
+    right: 0;
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+}
+
+.hero-destacada-punto {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background-color: rgba(91, 58, 142, 0.25);
+    transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+    .hero-destacada-punto.activo {
+        background-color: var(--color-primario);
+        transform: scale(1.3);
+    }
+
+/* Celular / tablet: una sola columna, el Hero ya no fuerza altura mínima */
+@media (max-width: 991px) {
+    .hero-catalogo {
+        grid-template-columns: 1fr;
+        text-align: center;
+        min-height: auto;
+        padding: 36px 6vw 44px;
+    }
+
+    .hero-titulo {
+        font-size: 2.2rem;
+    }
+
+    .hero-subtitulo {
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .hero-botones {
+        justify-content: center;
+    }
+
+    .hero-destacada-wrapper {
+        margin-top: 12px;
+    }
+}

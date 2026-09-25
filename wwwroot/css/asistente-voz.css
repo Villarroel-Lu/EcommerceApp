@@ -1,0 +1,134 @@
+﻿/* ============================================================
+   Asistente de voz: botón flotante + panel, y el botón "Dictar"
+   del formulario de adopción. Colores de AdoptaPatitas (morado,
+   rosado), no los del proyecto de referencia (que era verde outdoor).
+   ============================================================ */
+
+/* Oculto por defecto: el partial le agrega la clase
+   "asistente-voz--soportado" al <html> SOLO si el navegador tiene
+   reconocimiento de voz. En Firefox/Safari, esto nunca pasa, y el
+   botón queda escondido sin romper nada. */
+.asistente-voz {
+    display: none;
+}
+
+.asistente-voz--soportado .asistente-voz {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 10px;
+    position: fixed;
+    right: 1.5rem;
+    bottom: 1.5rem;
+    z-index: 1040; /* por encima del contenido, por debajo de los modales de Bootstrap */
+}
+
+.asistente-voz__btn {
+    width: 60px;
+    height: 60px;
+    border: none;
+    border-radius: 50%;
+    font-size: 1.6rem;
+    color: #fff;
+    background: linear-gradient(135deg, var(--color-primario), var(--color-secundario));
+    box-shadow: 0 10px 26px rgba(91, 58, 142, 0.35);
+    cursor: pointer;
+    transition: transform 0.15s ease;
+}
+
+    .asistente-voz__btn:hover {
+        transform: scale(1.06);
+    }
+
+    .asistente-voz__btn:active {
+        transform: scale(0.96);
+    }
+
+/* Mientras escucha: el botón "respira" con una onda suave. */
+.asistente-voz--escuchando .asistente-voz__btn {
+    position: relative;
+    animation: asistente-voz-pulso 1.6s ease-in-out infinite;
+}
+
+@keyframes asistente-voz-pulso {
+    0%, 100% {
+        box-shadow: 0 10px 26px rgba(91, 58, 142, 0.35), 0 0 0 0 rgba(217, 91, 145, 0.5);
+    }
+
+    50% {
+        box-shadow: 0 10px 26px rgba(91, 58, 142, 0.35), 0 0 0 14px rgba(217, 91, 145, 0);
+    }
+}
+
+/* Quien tenga activado "reducir movimiento" en su sistema no ve la
+   animación (accesibilidad). */
+@media (prefers-reduced-motion: reduce) {
+    .asistente-voz--escuchando .asistente-voz__btn {
+        animation: none;
+    }
+}
+
+.asistente-voz__panel {
+    max-width: 260px;
+    padding: 12px 16px;
+    border-radius: 14px;
+    background: #fff;
+    box-shadow: 0 14px 34px rgba(91, 58, 142, 0.25);
+    border: 1px solid var(--color-rosa-claro);
+}
+
+.asistente-voz__estado {
+    margin: 0 0 3px;
+    font-family: 'Quicksand', sans-serif;
+    font-weight: 700;
+    font-size: 0.75rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--color-primario);
+}
+
+.asistente-voz__dicho {
+    margin: 0;
+    font-size: 0.88rem;
+    color: #4a4453;
+    line-height: 1.4;
+}
+
+@media (max-width: 767px) {
+    .asistente-voz--soportado .asistente-voz {
+        right: 1rem;
+        bottom: 1rem;
+    }
+
+    .asistente-voz__btn {
+        width: 54px;
+        height: 54px;
+        font-size: 1.4rem;
+    }
+}
+
+/* --- Botón "Dictar" del formulario de adopción --- */
+.btn-dictar {
+    display: none; /* mismo criterio: solo aparece con soporte de voz */
+    align-items: center;
+    gap: 6px;
+    padding: 5px 14px;
+    border: 1px solid var(--color-rosa-claro);
+    border-radius: 50px;
+    background: #fff;
+    color: var(--color-primario);
+    font-size: 0.82rem;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.asistente-voz--soportado .btn-dictar {
+    display: inline-flex;
+}
+
+.btn-dictar--activo {
+    background: var(--color-secundario);
+    border-color: var(--color-secundario);
+    color: #fff;
+    animation: asistente-voz-pulso 1.6s ease-in-out infinite;
+}

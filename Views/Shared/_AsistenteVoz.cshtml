@@ -1,0 +1,30 @@
+﻿@* ============================================================
+   Botón flotante del asistente de voz + panel de mensajes.
+   El JavaScript (asistente-voz.js) revisa si el navegador soporta
+   SpeechRecognition; si no, deja este botón oculto con CSS
+   ("display:none" por defecto, y solo "site.js"/asistente-voz.js lo
+   activa cuando corresponde... en este caso, más simple: el propio
+   botón siempre se dibuja, pero si no hay soporte, "iniciar()" en el
+   JS nunca conecta el evento de clic, así que no rompe nada — aun así,
+   para no confundir a quien SÍ tiene el navegador sin soporte, el CSS
+   lo esconde y solo se muestra cuando JS confirma soporte, agregando
+   la clase "asistente-voz--soportado" al <html> (ver el script chico
+   de abajo). *@
+<div id="asistenteVoz" class="asistente-voz">
+    <button type="button" class="asistente-voz__btn" aria-label="Hablar con el asistente de AdoptaPatitas">
+        🎤
+    </button>
+    <div class="asistente-voz__panel" hidden>
+        <p class="asistente-voz__estado">Asistente</p>
+        <p class="asistente-voz__dicho"></p>
+    </div>
+</div>
+<script>
+    // Si el navegador SÍ soporta reconocimiento de voz, se agrega esta
+    // clase para que el CSS muestre el botón (ver adoptapatitas.css,
+    // bloque V17). Si no hay soporte (Firefox, Safari…), el botón
+    // sigue oculto y nada se rompe.
+    if (window.SpeechRecognition || window.webkitSpeechRecognition) {
+        document.documentElement.classList.add('asistente-voz--soportado');
+    }
+</script>

@@ -1,6 +1,95 @@
 ﻿@{
-    ViewData["Title"] = "Privacy Policy";
+    ViewData["Title"] = "Cómo adoptar";
 }
-<h1>@ViewData["Title"]</h1>
 
-<p>Use this page to detail your site's privacy policy.</p>
+@* ============================================================
+   "CÓMO ADOPTAR" — antes esta página (Home/Privacy) tenía el texto
+   de plantilla en inglés ("Privacy Policy... Use this page to detail
+   your site's privacy policy."). El link del menú "Cómo adoptar" ya
+   apuntaba aquí (asp-action="Privacy"), así que solo hacía falta
+   ponerle contenido real; no hizo falta tocar el menú ni las rutas.
+   ============================================================ *@
+<style>
+    .ca-pagina { max-width: 760px; margin: 8px auto 40px; }
+
+    .ca-paso {
+        display: flex;
+        gap: 18px;
+        align-items: flex-start;
+        padding: 20px 0;
+        border-bottom: 1px solid var(--color-rosa-claro);
+    }
+
+    .ca-paso:last-of-type { border-bottom: none; }
+
+    .ca-numero {
+        flex-shrink: 0;
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: 'Quicksand', sans-serif;
+        font-weight: 700;
+        font-size: 1.2rem;
+        color: #fff;
+        background: linear-gradient(135deg, var(--color-primario), var(--color-secundario));
+    }
+
+    .ca-paso h5 {
+        font-family: 'Quicksand', sans-serif;
+        font-weight: 700;
+        color: var(--color-primario);
+        margin-bottom: 4px;
+    }
+</style>
+
+<div class="ca-pagina mt-4">
+    <h2>🐾 Cómo adoptar</h2>
+    <p class="text-muted mb-4">Adoptar en AdoptaPatitas es un proceso simple, pensado para que tu nuevo compañero llegue a un hogar responsable.</p>
+
+    <div class="ca-paso">
+        <div class="ca-numero">1</div>
+        <div>
+            <h5>Crea tu cuenta</h5>
+            <p class="text-muted mb-0">Solo necesitas tu nombre, correo y una contraseña. También puedes registrarte con Google o GitHub en un clic.</p>
+        </div>
+    </div>
+
+    <div class="ca-paso">
+        <div class="ca-numero">2</div>
+        <div>
+            <h5>Encuentra a tu compañero</h5>
+            <p class="text-muted mb-0">Recorre el catálogo, filtra por tipo, sexo o nombre, y toca cualquier mascota para ver su ficha completa: edad, salud, ubicación y más.</p>
+        </div>
+    </div>
+
+    <div class="ca-paso">
+        <div class="ca-numero">3</div>
+        <div>
+            <h5>Envía tu solicitud</h5>
+            <p class="text-muted mb-0">Completa el formulario de adopción con tus datos y una foto de tu carnet de identidad, para verificar quién eres antes de aprobar.</p>
+        </div>
+    </div>
+
+    <div class="ca-paso">
+        <div class="ca-numero">4</div>
+        <div>
+            <h5>Zoonosis revisa tu solicitud</h5>
+            <p class="text-muted mb-0">Nuestro equipo evalúa tu motivo y tus datos. Puedes ver el estado de tu solicitud en cualquier momento desde "Mis solicitudes".</p>
+        </div>
+    </div>
+
+    <div class="ca-paso">
+        <div class="ca-numero">5</div>
+        <div>
+            <h5>¡Coordinamos la entrega!</h5>
+            <p class="text-muted mb-0">Si tu solicitud es aprobada, te contactaremos para coordinar cómo y cuándo llevar a tu nuevo compañero a casa.</p>
+        </div>
+    </div>
+
+    <div class="text-center mt-4">
+        <a asp-controller="Mascotas" asp-action="Index" class="btn btn-adoptapatitas-primario">Ver mascotas en adopción</a>
+    </div>
+</div>

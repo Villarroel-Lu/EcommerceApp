@@ -219,7 +219,15 @@
                  por si alguien se salta el navegador. *@
             <h6 class="sa-seccion">💬 Cuéntanos tu motivo</h6>
             <div class="sa-motivo">
-                <label for="Motivo">¿Por qué quieres adoptar a @(Model.Mascota.Nombre)? <span class="text-danger">*</span></label>
+                <div class="d-flex justify-content-between align-items-start flex-wrap gap-2">
+                    <label for="Motivo" class="mb-0">¿Por qué quieres adoptar a @(Model.Mascota.Nombre)? <span class="text-danger">*</span></label>
+                    @* Botón para dictar el motivo por voz, en vez de escribirlo.
+                       Se oculta solo con CSS si el navegador no soporta
+                       reconocimiento de voz (ver adoptapatitas.css, V17). *@
+                    <button type="button" id="btnDictarMotivo" class="btn-dictar" aria-label="Dictar por voz">
+                        🎤 <span>Dictar</span>
+                    </button>
+                </div>
                 <p class="small text-muted mb-2">
                     Es obligatorio: Zoonosis evaluará tu respuesta para decidir la adopción.
                     Cuéntanos cómo es tu hogar y cómo lo cuidarás (mínimo 20 caracteres).
@@ -253,6 +261,64 @@
             function actualizar() { contador.textContent = caja.value.length + ' / 500'; }
             caja.addEventListener('input', actualizar);
             actualizar();
+        })();
+    </script>
+
+    @* Dictado por voz del motivo (Web Speech API, sin backend). Igual que
+       el asistente de navegación: sin soporte del navegador, el botón se
+       esconde con CSS y este script simplemente no hace nada. *@
+    <script>
+        (function () {
+            var SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            var boton = document.getElementById('btnDictarMotivo');
+            var caja = document.getElementById('Motivo');
+            if (!SpeechRecognition || !boton || !caja) return;
+
+            document.documentElement.classList.add('asistente-voz--soportado');
+
+            var reconocimiento = null;
+            var escuchando = false;
+
+            // Si el asistente flotante (u otro dictado) empieza a
+            // escuchar, este micrófono se corta solo.
+            document.addEventListener('voz:detener', function () {
+                if (reconocimiento) reconocimiento.abort();
+            });
+
+            boton.addEventListener('click', function () {
+                if (escuchando) {
+                    if (reconocimiento) reconocimiento.abort();
+                    return;
+                }
+
+                // Avisa a otros micrófonos del sitio ANTES de empezar este
+                // (para no cortarse a sí mismo).
+                document.dispatchEvent(new CustomEvent('voz:detener'));
+
+                reconocimiento = new SpeechRecognition();
+                reconocimiento.lang = 'es-BO';
+                reconocimiento.interimResults = false;
+
+                reconocimiento.onstart = function () {
+                    escuchando = true;
+                    boton.classList.add('btn-dictar--activo');
+                };
+
+                reconocimiento.onresult = function (evento) {
+                    var texto = evento.results[0][0].transcript;
+                    // Se agrega al final de lo que ya había escrito, con un
+                    // espacio, en vez de borrar lo anterior.
+                    caja.value = (caja.value.trim() + ' ' + texto).trim();
+                    caja.dispatchEvent(new Event('input')); // actualiza el contador
+                };
+
+                reconocimiento.onend = function () {
+                    escuchando = false;
+                    boton.classList.remove('btn-dictar--activo');
+                };
+
+                reconocimiento.start();
+            });
         })();
     </script>
 }

@@ -31,7 +31,13 @@ namespace EcommerceApp.Controllers
                 query = query.Where(m => m.Tipo == tipo.Value);
 
             if (!string.IsNullOrWhiteSpace(busqueda))
-                query = query.Where(m => m.Nombre.Contains(busqueda));
+                // EF.Functions.ILike (en vez de .Contains) es la búsqueda "sin
+                // importar mayúsculas/minúsculas" de PostgreSQL. Antes, buscar
+                // "max" no encontraba a "Maximiliano" porque .Contains() SÍ
+                // distingue mayúsculas en PostgreSQL (a diferencia de SQL
+                // Server, donde por defecto no importa). Los "%" alrededor
+                // significan "que contenga este texto en cualquier parte".
+                query = query.Where(m => EF.Functions.ILike(m.Nombre, $"%{busqueda}%"));
 
             if (sexo.HasValue)
                 query = query.Where(m => m.Sexo == sexo.Value);
@@ -66,6 +72,16 @@ namespace EcommerceApp.Controllers
             ViewBag.PaginaActual = pagina;
             ViewBag.TotalPaginas = totalPaginas;
             ViewBag.TotalMascotas = totalMascotas;
+
+            // Mascotas destacadas del Hero: las 5 disponibles más recientes,
+            // sin importar los filtros que se estén usando en ese momento
+            // (es una consulta aparte, chica y rápida). La vista las va
+            // rotando cada 5 segundos en la tarjeta de la derecha.
+            ViewBag.MascotasDestacadas = await context.Mascotas.AsNoTracking()
+                .Where(m => m.Disponible)
+                .OrderByDescending(m => m.FechaIngreso)
+                .Take(5)
+                .ToListAsync();
 
             return View(mascotas);
         }

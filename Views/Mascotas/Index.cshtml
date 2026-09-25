@@ -10,209 +10,334 @@
 
 <div class="catalogo-full-ancho">
 
-<!-- ===== Banner de bienvenida (franja rosada) ===== -->
-<div class="banner-mascotas d-flex justify-content-between align-items-center">
-    <div>
-        <h2 class="mb-1">¡Hay muchas patitas esperando por ti!</h2>
-        <p class="mb-0">Conoce a nuestros amigos en adopción y dale un hogar lleno de amor.</p>
-    </div>
-</div>
+    @* ===== HERO: lo primero que ve cualquiera al entrar =====
+   Para quien NO tiene sesión, es más grande y con una invitación a
+   crear cuenta (basado en el que ya tenías en Home/Index.cshtml, que
+   ahora nadie veía porque el catálogo pasó a ser la página principal).
+   Para quien ya tiene sesión (Adoptante o Zoonosis), se deja compacto:
+   ya sabe usar el sitio, no hace falta venderle la idea de adoptar. *@
+    @if (!User.Identity!.IsAuthenticated)
+    {
+        var destacadas = (ViewBag.MascotasDestacadas as List<EcommerceApp.Models.Mascota>) ?? new();
 
-<!-- ===== Barra de filtros + orden ===== -->
-<form method="get" asp-action="Index" class="row g-2 align-items-center mb-3 filtro-catalogo">
-    <!-- Si cambian tipo/página vía otros links, method="get" conserva
+        @* ============================================================
+       HERO en 2 columnas. Solo se muestra a quien NO tiene sesión.
+       "hero-sin-destacada" se agrega si no hay NINGUNA mascota
+       disponible todavía, para que el texto ocupe todo el ancho en
+       vez de dejar un hueco vacío a la derecha.
+       La tarjeta de la derecha ahora rota entre varias mascotas (las
+       más recientes): todas quedan dibujadas, una encima de otra, y
+       el script de más abajo va mostrando una a la vez cada 5
+       segundos con un fundido suave (ver .hero-destacada-slide en el
+       CSS y el <script> al final de este bloque).
+       ============================================================ *@
+        <div class="hero-catalogo @(destacadas.Count == 0 ? "hero-sin-destacada" : "")">
+            <div class="hero-texto">
+                <span class="hero-pastilla">🐾 Nuevos amigos cada semana</span>
+
+                <h1 class="hero-titulo">
+                    <span class="hero-linea hero-linea-1">Aquí vive tu</span>
+                    <span class="hero-linea hero-linea-2">próximo mejor amigo</span>
+                    <span class="hero-linea hero-linea-3">conócelo hoy</span>
+                </h1>
+
+                <p class="hero-subtitulo">
+                    AdoptaPatitas conecta perritos y gatitos de Cochabamba con
+                    <strong>familias que les dan una segunda oportunidad</strong>.
+                </p>
+
+                <div class="hero-botones">
+                    @* Ancla en vez de recargar la página: el Hero ya está arriba
+                   del catálogo, así que "Ver mascotas" solo baja con scroll
+                   suave hasta la grilla (ver "scroll-behavior" en el CSS). *@
+                    <a href="#catalogo-grid" class="btn btn-adoptapatitas-primario btn-lg">🐾 Ver mascotas disponibles</a>
+                    <a asp-controller="Home" asp-action="Privacy" class="btn btn-adoptapatitas-outline btn-lg hero-catalogo-btn">Cómo adoptar →</a>
+                </div>
+            </div>
+
+            @if (destacadas.Count > 0)
+            {
+                <div class="hero-destacada-wrapper" id="heroDestacadaWrapper">
+                    @for (var i = 0; i < destacadas.Count; i++)
+                    {
+                        var m = destacadas[i];
+                        <div class="hero-destacada hero-destacada-slide @(i == 0 ? "activa" : "")">
+                            <div class="hero-destacada-foto">
+                                @if (!string.IsNullOrEmpty(m.FotoUrl))
+                                {
+                                    <img src="@m.FotoUrl" alt="Foto de @m.Nombre" />
+                                }
+                                else
+                                {
+                                    <div class="hero-destacada-sin-foto">
+                                        @(m.Tipo == EcommerceApp.Models.TipoMascota.Perro ? "🐶" : "🐱")
+                                    </div>
+                                }
+                                <span class="hero-destacada-badge">✨ Recién llegada</span>
+                            </div>
+
+                            <div class="hero-destacada-info">
+                                <h5>@m.Nombre</h5>
+                                <div class="hero-destacada-tags">
+                                    <span class="badge-estado saludable">✓ Disponible</span>
+                                    <span class="hero-destacada-ubicacion">📍 @m.Ubicacion</span>
+                                </div>
+                                <a asp-action="Details" asp-route-id="@m.Id" class="btn btn-adoptapatitas-primario w-100 mt-2">Ver perfil →</a>
+                            </div>
+                        </div>
+                    }
+
+                    @if (destacadas.Count > 1)
+                    {
+                        <div class="hero-destacada-puntos">
+                            @for (var i = 0; i < destacadas.Count; i++)
+                            {
+                                <span class="hero-destacada-punto @(i == 0 ? "activo" : "")"></span>
+                            }
+                        </div>
+                    }
+                </div>
+
+                @* Carrusel simple, sin librerías: cada 5 segundos le quita la
+               clase "activa" a la tarjeta visible y se la pone a la
+               siguiente (el fundido lo hace el CSS con "transition"). Si
+               solo hay 1 mascota, el bucle no tiene nada que rotar y no
+               hace nada, así que es seguro dejarlo siempre. *@
+                <script>
+                            (function () {
+                                var wrapper = document.getElementById('heroDestacadaWrapper');
+                                if (!wrapper) return;
+                                var tarjetas = wrapper.querySelectorAll('.hero-destacada-slide');
+                                var puntos = wrapper.querySelectorAll('.hero-destacada-punto');
+                                if (tarjetas.length < 2) return;
+
+                                var actual = 0;
+                                setInterval(function () {
+                                    tarjetas[actual].classList.remove('activa');
+                                    if (puntos.length) puntos[actual].classList.remove('activo');
+
+                                    actual = (actual + 1) % tarjetas.length;
+
+                                    tarjetas[actual].classList.add('activa');
+                                    if (puntos.length) puntos[actual].classList.add('activo');
+                                }, 5000);
+                            })();
+                </script>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="banner-mascotas d-flex justify-content-between align-items-center">
+            <div>
+                <h2 class="mb-1">¡Hay muchas patitas esperando por ti!</h2>
+                <p class="mb-0">Conoce a nuestros amigos en adopción y dale un hogar lleno de amor.</p>
+            </div>
+        </div>
+    }
+
+    <!-- ===== Barra de filtros + orden ===== -->
+    <form id="catalogo-grid" method="get" asp-action="Index" class="row g-2 align-items-center mb-3 filtro-catalogo">
+        <!-- Si cambian tipo/página vía otros links, method="get" conserva
          los filtros actuales porque van todos en la misma URL. -->
-    <input type="hidden" name="tipo" value="@tipoSeleccionado" />
+        <input type="hidden" name="tipo" value="@tipoSeleccionado" />
 
-    <div class="col-md-4">
-        <input type="text" name="busqueda" value="@ViewBag.Busqueda"
-               class="form-control" placeholder="Buscar por nombre..." />
-    </div>
-    <div class="col-md-2">
-        <select name="sexo" class="form-select" onchange="this.form.submit()">
-            <option value="">Sexo: Todos</option>
-            <option value="Macho" selected="@(ViewBag.SexoSeleccionado?.ToString() == "Macho")">Macho</option>
-            <option value="Hembra" selected="@(ViewBag.SexoSeleccionado?.ToString() == "Hembra")">Hembra</option>
-        </select>
-    </div>
-    <div class="col-md-3">
-        <!-- Dropdown de orden, como el "Más recientes" del mockup -->
-        <select name="orden" class="form-select" onchange="this.form.submit()">
-            <option value="recientes" selected="@(ordenSeleccionado == "recientes")">Más recientes</option>
-            <option value="antiguas" selected="@(ordenSeleccionado == "antiguas")">Más antiguas</option>
-            <option value="nombre" selected="@(ordenSeleccionado == "nombre")">Nombre (A-Z)</option>
-        </select>
-    </div>
-    <div class="col-md-3">
-        <button type="submit" class="btn btn-adoptapatitas-primario w-100">Buscar</button>
-    </div>
-</form>
+        <div class="col-md-4">
+            <input type="text" name="busqueda" value="@ViewBag.Busqueda"
+                   class="form-control" placeholder="Buscar por nombre..." />
+        </div>
+        <div class="col-md-2">
+            <select name="sexo" class="form-select" onchange="this.form.submit()">
+                <option value="">Sexo: Todos</option>
+                <option value="Macho" selected="@(ViewBag.SexoSeleccionado?.ToString() == "Macho")">Macho</option>
+                <option value="Hembra" selected="@(ViewBag.SexoSeleccionado?.ToString() == "Hembra")">Hembra</option>
+            </select>
+        </div>
+        <div class="col-md-3">
+            <!-- Dropdown de orden, como el "Más recientes" del mockup -->
+            <select name="orden" class="form-select" onchange="this.form.submit()">
+                <option value="recientes" selected="@(ordenSeleccionado == "recientes")">Más recientes</option>
+                <option value="antiguas" selected="@(ordenSeleccionado == "antiguas")">Más antiguas</option>
+                <option value="nombre" selected="@(ordenSeleccionado == "nombre")">Nombre (A-Z)</option>
+            </select>
+        </div>
+        <div class="col-md-3">
+            <button type="submit" class="btn btn-adoptapatitas-primario w-100">Buscar</button>
+        </div>
+    </form>
 
-<!-- ===== Pestañas Perros / Gatos ===== -->
-<ul class="nav tabs-tipo mb-3">
-    <li class="nav-item">
-        <a class="nav-link @(tipoSeleccionado == null ? "active" : "")"
-           asp-action="Index" asp-route-orden="@ordenSeleccionado">🐾 Todas</a>
-    </li>
-    <li class="nav-item">
-        <a class="nav-link @(tipoSeleccionado == EcommerceApp.Models.TipoMascota.Perro ? "active" : "")"
-           asp-action="Index" asp-route-tipo="Perro" asp-route-orden="@ordenSeleccionado">🐶 Perros</a>
-    </li>
-    <li class="nav-item">
-        <a class="nav-link @(tipoSeleccionado == EcommerceApp.Models.TipoMascota.Gato ? "active" : "")"
-           asp-action="Index" asp-route-tipo="Gato" asp-route-orden="@ordenSeleccionado">🐱 Gatos</a>
-    </li>
-</ul>
+    <!-- ===== Pestañas Perros / Gatos ===== -->
+    <ul class="nav tabs-tipo mb-3">
+        @* Las 3 pestañas ahora también reenvían "busqueda" y "sexo": antes,
+       si buscabas algo y tocabas "Perros", tu búsqueda desaparecía
+       porque estos links solo llevaban tipo+orden. *@
+        <li class="nav-item">
+            <a class="nav-link @(tipoSeleccionado == null ? "active" : "")"
+               asp-action="Index" asp-route-orden="@ordenSeleccionado"
+               asp-route-busqueda="@ViewBag.Busqueda" asp-route-sexo="@ViewBag.SexoSeleccionado">🐾 Todas</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link @(tipoSeleccionado == EcommerceApp.Models.TipoMascota.Perro ? "active" : "")"
+               asp-action="Index" asp-route-tipo="Perro" asp-route-orden="@ordenSeleccionado"
+               asp-route-busqueda="@ViewBag.Busqueda" asp-route-sexo="@ViewBag.SexoSeleccionado">🐶 Perros</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link @(tipoSeleccionado == EcommerceApp.Models.TipoMascota.Gato ? "active" : "")"
+               asp-action="Index" asp-route-tipo="Gato" asp-route-orden="@ordenSeleccionado"
+               asp-route-busqueda="@ViewBag.Busqueda" asp-route-sexo="@ViewBag.SexoSeleccionado">🐱 Gatos</a>
+        </li>
+    </ul>
 
-<p class="text-muted">Se encontraron @ViewBag.TotalMascotas mascotas</p>
+    <p class="text-muted">Se encontraron @ViewBag.TotalMascotas mascotas</p>
 
-@{
-    var listaMascotas = Model.ToList();
-}
+    @{
+        var listaMascotas = Model.ToList();
+    }
 
-@if (!listaMascotas.Any())
-{
-    <!-- ===== Estado vacío (sin resultados) ===== -->
-    <div class="estado-vacio text-center">
-        <div class="estado-vacio-icono">🐾</div>
-        <h4>No encontramos mascotas con esos filtros</h4>
-        <p class="text-muted">Prueba quitando algún filtro o busca con otro nombre.</p>
-        <a asp-action="Index" class="btn btn-adoptapatitas-outline">Ver todas las mascotas</a>
-    </div>
-}
-else
-{
-    <!-- ===== Grilla de tarjetas ===== -->
-    <div class="row g-3">
-        @for (var i = 0; i < listaMascotas.Count; i++)
-        {
-            var mascota = listaMascotas[i];
-            <div class="col-6 col-md-4 col-lg-3">
-                <div class="card card-mascota h-100 fade-in-up" style="animation-delay:@(i * 0.06)s;">
+    @if (!listaMascotas.Any())
+    {
+        <!-- ===== Estado vacío (sin resultados) ===== -->
+        <div class="estado-vacio text-center">
+            <div class="estado-vacio-icono">🐾</div>
+            <h4>No encontramos mascotas con esos filtros</h4>
+            <p class="text-muted">Prueba quitando algún filtro o busca con otro nombre.</p>
+            <a asp-action="Index" class="btn btn-adoptapatitas-outline">Ver todas las mascotas</a>
+        </div>
+    }
+    else
+    {
+        <!-- ===== Grilla de tarjetas ===== -->
+        <div class="row g-3">
+            @for (var i = 0; i < listaMascotas.Count; i++)
+            {
+                var mascota = listaMascotas[i];
+                <div class="col-6 col-md-4 col-lg-3">
+                    <div class="card card-mascota h-100 fade-in-up" style="animation-delay:@(i * 0.06)s;">
 
-                    @* Al tocar la FOTO también se abre la ventana flotante de la mascota
+                        @* Al tocar la FOTO también se abre la ventana flotante de la mascota
                        (mismo efecto que el botón "Ver perfil"). *@
-                    <div class="card-mascota-imagen-wrapper" role="button" style="cursor:pointer;"
-                         data-bs-toggle="modal" data-bs-target="#modalMascota-@mascota.Id">
-                        @if (!string.IsNullOrEmpty(mascota.FotoUrl))
-                        {
-                            <img src="@mascota.FotoUrl" alt="Foto de @mascota.Nombre" />
-                        }
-                        else
-                        {
-                            <!-- Sin depender de un archivo de imagen que podría no
+                        <div class="card-mascota-imagen-wrapper" role="button" style="cursor:pointer;"
+                             data-bs-toggle="modal" data-bs-target="#modalMascota-@mascota.Id">
+                            @if (!string.IsNullOrEmpty(mascota.FotoUrl))
+                            {
+                                <img src="@mascota.FotoUrl" alt="Foto de @mascota.Nombre" />
+                            }
+                            else
+                            {
+                                <!-- Sin depender de un archivo de imagen que podría no
                                  existir: un fondo degradado + patita como marcador
                                  de posición, hecho solo con CSS. -->
-                            <div class="mascota-sin-foto">
-                                @(mascota.Tipo == EcommerceApp.Models.TipoMascota.Perro ? "🐶" : "🐱")
-                            </div>
-                        }
+                                <div class="mascota-sin-foto">
+                                    @(mascota.Tipo == EcommerceApp.Models.TipoMascota.Perro ? "🐶" : "🐱")
+                                </div>
+                            }
 
-                        @{
-                            var estadoPrincipal = mascota.EstadosSalud.FirstOrDefault() ?? "Saludable";
-                        }
-                        <span class="badge-estado @estadoPrincipal.ToLower()">
-                            @estadoPrincipal
-                        </span>
-                        <span class="badge-corazon">♥</span>
-                    </div>
+                            @{
+                                var estadoPrincipal = mascota.EstadosSalud.FirstOrDefault() ?? "Saludable";
+                            }
+                            <span class="badge-estado @estadoPrincipal.ToLower()">
+                                @estadoPrincipal
+                            </span>
+                            <span class="badge-corazon">♥</span>
+                        </div>
 
-                    <div class="card-body">
-                        <h5 class="card-title mb-1">@mascota.Nombre</h5>
-                        <p class="mb-1 text-muted small">
-                            @(mascota.Tipo == EcommerceApp.Models.TipoMascota.Perro ? "🐶 Perro" : "🐱 Gato")
-                        </p>
-                        <p class="mb-1 small">📅 @mascota.Edad</p>
-                        <p class="mb-1 small">⚥ @mascota.Sexo</p>
-                        @if (!string.IsNullOrEmpty(mascota.Color))
-                        {
-                            <p class="mb-1 small">🎨 @mascota.Color</p>
-                        }
-                        <p class="mb-2 small">📍 @mascota.Ubicacion</p>
+                        <div class="card-body">
+                            <h5 class="card-title mb-1">@mascota.Nombre</h5>
+                            <p class="mb-1 text-muted small">
+                                @(mascota.Tipo == EcommerceApp.Models.TipoMascota.Perro ? "🐶 Perro" : "🐱 Gato")
+                            </p>
+                            <p class="mb-1 small">📅 @mascota.Edad</p>
+                            <p class="mb-1 small">⚥ @mascota.Sexo</p>
+                            @if (!string.IsNullOrEmpty(mascota.Color))
+                            {
+                                <p class="mb-1 small">🎨 @mascota.Color</p>
+                            }
+                            <p class="mb-2 small">📍 @mascota.Ubicacion</p>
 
-                        @if (mascota.EstadosSalud.Count > 1)
-                        {
-                            <div class="mb-2">
-                                @foreach (var estado in mascota.EstadosSalud.Skip(1))
-                                {
-                                    <span class="badge bg-light text-dark border me-1">@estado</span>
-                                }
-                            </div>
-                        }
+                            @if (mascota.EstadosSalud.Count > 1)
+                            {
+                                <div class="mb-2">
+                                    @foreach (var estado in mascota.EstadosSalud.Skip(1))
+                                    {
+                                        <span class="badge bg-light text-dark border me-1">@estado</span>
+                                    }
+                                </div>
+                            }
 
-                        @if (mascota.RequiereCuidadosLargoPlazo || mascota.TieneEnfermedadBase)
-                        {
-                            <p class="mb-2 small text-muted">💊 Requiere cuidados especiales</p>
-                        }
+                            @if (mascota.RequiereCuidadosLargoPlazo || mascota.TieneEnfermedadBase)
+                            {
+                                <p class="mb-2 small text-muted">💊 Requiere cuidados especiales</p>
+                            }
 
-                        <div class="d-flex gap-2">
-                            @* Antes era un enlace a otra página (Details). Ahora abre la
+                            <div class="d-flex gap-2">
+                                @* Antes era un enlace a otra página (Details). Ahora abre la
                                ventana flotante: data-bs-toggle="modal" es Bootstrap puro,
                                no necesita JavaScript propio. *@
-                            <button type="button" class="btn btn-sm btn-adoptapatitas-outline flex-fill"
-                                    data-bs-toggle="modal" data-bs-target="#modalMascota-@mascota.Id">Ver perfil</button>
-                            @* Botón "Adoptar" según quién esté mirando el catálogo:
+                                <button type="button" class="btn btn-sm btn-adoptapatitas-outline flex-fill"
+                                        data-bs-toggle="modal" data-bs-target="#modalMascota-@mascota.Id">
+                                    Ver perfil
+                                </button>
+                                @* Botón "Adoptar" según quién esté mirando el catálogo:
                                - Adoptante con sesión: va directo al formulario de adopción.
                                - Visitante SIN sesión: va al login, y "returnUrl" le dice
                                  al login que después lo devuelva al formulario de ESTA
                                  mascota (así no tiene que volver a buscarla).
                                - Zoonosis / Veterinario: no ven el botón (no adoptan). *@
-                            @if (User.Identity!.IsAuthenticated && User.IsInRole("Adoptante"))
-                            {
-                                <a asp-controller="Solicitudes" asp-action="Crear" asp-route-mascotaId="@mascota.Id"
-                                   class="btn btn-sm btn-adoptapatitas-secundario flex-fill">Adoptar</a>
-                            }
-                            else if (!User.Identity!.IsAuthenticated)
-                            {
-                                <a asp-controller="Account" asp-action="Login"
-                                   asp-route-returnUrl="@Url.Action("Crear", "Solicitudes", new { mascotaId = mascota.Id })"
-                                   class="btn btn-sm btn-adoptapatitas-secundario flex-fill">Adoptar</a>
-                            }
+                                @if (User.Identity!.IsAuthenticated && User.IsInRole("Adoptante"))
+                                {
+                                    <a asp-controller="Solicitudes" asp-action="Crear" asp-route-mascotaId="@mascota.Id"
+                                       class="btn btn-sm btn-adoptapatitas-secundario flex-fill">Adoptar</a>
+                                }
+                                else if (!User.Identity!.IsAuthenticated)
+                                {
+                                    <a asp-controller="Account" asp-action="Login"
+                                       asp-route-returnUrl="@Url.Action("Crear", "Solicitudes", new { mascotaId = mascota.Id })"
+                                       class="btn btn-sm btn-adoptapatitas-secundario flex-fill">Adoptar</a>
+                                }
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-        }
-    </div>
+            }
+        </div>
 
-    <!-- ===== Paginación ===== -->
-    @if (totalPaginas > 1)
-    {
-        <nav class="mt-4 d-flex justify-content-center">
-            <ul class="pagination-adoptapatitas">
-                <li>
-                    <a class="pagina-link @(paginaActual == 1 ? "disabled" : "")"
-                       asp-action="Index"
-                       asp-route-tipo="@tipoSeleccionado" asp-route-busqueda="@ViewBag.Busqueda"
-                       asp-route-sexo="@ViewBag.SexoSeleccionado" asp-route-orden="@ordenSeleccionado"
-                       asp-route-pagina="@(paginaActual - 1)">←</a>
-                </li>
-
-                @for (var p = 1; p <= totalPaginas; p++)
-                {
+        <!-- ===== Paginación ===== -->
+        @if (totalPaginas > 1)
+        {
+            <nav class="mt-4 d-flex justify-content-center">
+                <ul class="pagination-adoptapatitas">
                     <li>
-                        <a class="pagina-link @(p == paginaActual ? "activa" : "")"
+                        <a class="pagina-link @(paginaActual == 1 ? "disabled" : "")"
                            asp-action="Index"
                            asp-route-tipo="@tipoSeleccionado" asp-route-busqueda="@ViewBag.Busqueda"
                            asp-route-sexo="@ViewBag.SexoSeleccionado" asp-route-orden="@ordenSeleccionado"
-                           asp-route-pagina="@p">@p</a>
+                           asp-route-pagina="@(paginaActual - 1)">←</a>
                     </li>
-                }
 
-                <li>
-                    <a class="pagina-link @(paginaActual == totalPaginas ? "disabled" : "")"
-                       asp-action="Index"
-                       asp-route-tipo="@tipoSeleccionado" asp-route-busqueda="@ViewBag.Busqueda"
-            
-           asp-route-sexo="@ViewBag.SexoSeleccionado" asp-route-orden="@ordenSeleccionado"
-                       asp-route-pagina="@(paginaActual + 1)">→</a>
-                </li>
-            </ul>
-        </nav>
+                    @for (var p = 1; p <= totalPaginas; p++)
+                    {
+                        <li>
+                            <a class="pagina-link @(p == paginaActual ? "activa" : "")"
+                               asp-action="Index"
+                               asp-route-tipo="@tipoSeleccionado" asp-route-busqueda="@ViewBag.Busqueda"
+                               asp-route-sexo="@ViewBag.SexoSeleccionado" asp-route-orden="@ordenSeleccionado"
+                               asp-route-pagina="@p">@p</a>
+                        </li>
+                    }
+
+                    <li>
+                        <a class="pagina-link @(paginaActual == totalPaginas ? "disabled" : "")"
+                           asp-action="Index"
+                           asp-route-tipo="@tipoSeleccionado" asp-route-busqueda="@ViewBag.Busqueda"
+                           asp-route-sexo="@ViewBag.SexoSeleccionado" asp-route-orden="@ordenSeleccionado"
+                           asp-route-pagina="@(paginaActual + 1)">→</a>
+                    </li>
+                </ul>
+            </nav>
+        }
     }
-}
 
-@* ============================================================
+    @* ============================================================
    VENTANA FLOTANTE DE CADA MASCOTA (una por mascota de la página)
    Queda oculta hasta que alguien toca la tarjeta. Diseño en DOS columnas:
    foto grande a la IZQUIERDA e información a la DERECHA.
@@ -222,309 +347,362 @@ else
    - En CSS, las reglas @media se escriben con doble arroba (@@media)
      porque Razor usa la arroba para su propio código.
    ============================================================ *@
-<style>
-    /* Ventana más grande que la normal de Bootstrap (800px) */
-    .fm-modal .modal-dialog { max-width: 1040px; }
+    <style>
+            /* Ventana más grande que la normal de Bootstrap (800px) */
+            .fm-modal .modal-dialog {
+                max-width: 1040px;
+            }
 
-    .fm-modal .modal-content {
-        border: 0;
-        border-radius: 28px;
-        overflow: hidden;
-        background-color: #fff;
-        box-shadow: 0 30px 90px rgba(91, 58, 142, 0.40);
-    }
+            .fm-modal .modal-content {
+                border: 0;
+                border-radius: 28px;
+                overflow: hidden;
+                background-color: #fff;
+                box-shadow: 0 30px 90px rgba(91, 58, 142, 0.40);
+            }
 
-    /* Fondo oscuro detrás de la ventana */
-    body.modal-open .modal-backdrop.show { opacity: 0.6; }
+            /* Fondo oscuro detrás de la ventana */
+            body.modal-open .modal-backdrop.show {
+                opacity: 0.6;
+            }
 
-    /* Botón X: círculo blanco flotando arriba a la derecha */
-    .fm-modal .btn-close {
-        position: absolute;
-        top: 16px;
-        right: 16px;
-        z-index: 10;
-        padding: 12px;
-        opacity: 1;
-        border-radius: 50%;
-        background-color: rgba(255, 255, 255, 0.95);
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-    }
+            /* Botón X: círculo blanco flotando arriba a la derecha */
+            .fm-modal .btn-close {
+                position: absolute;
+                top: 16px;
+                right: 16px;
+                z-index: 10;
+                padding: 12px;
+                opacity: 1;
+                border-radius: 50%;
+                background-color: rgba(255, 255, 255, 0.95);
+                box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            }
 
-    /* Dos columnas: 5 partes para la foto, 6 para la información */
-    .fm-grid { display: grid; grid-template-columns: 5fr 6fr; }
+            /* Dos columnas: 5 partes para la foto, 6 para la información */
+            .fm-grid {
+                display: grid;
+                grid-template-columns: 5fr 6fr;
+            }
 
-    /* --- Columna izquierda: FOTO --- */
-    .fm-foto {
-        position: relative;
-        min-height: 580px;
-        background: linear-gradient(135deg, var(--color-rosa-claro), var(--color-menta));
-    }
+            /* --- Columna izquierda: FOTO --- */
+            .fm-foto {
+                position: relative;
+                min-height: 580px;
+                background: linear-gradient(135deg, var(--color-rosa-claro), var(--color-menta));
+            }
 
-    /* La foto llena toda la columna sin deformarse (object-fit: cover) */
-    .fm-foto img {
-        position: absolute;
-        inset: 0;
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-    }
+                /* La foto llena toda la columna sin deformarse (object-fit: cover) */
+                .fm-foto img {
+                    position: absolute;
+                    inset: 0;
+                    width: 100%;
+                    height: 100%;
+                    object-fit: cover;
+                }
 
-    .fm-foto-vacia {
-        position: absolute;
-        inset: 0;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 6rem;
-    }
+            .fm-foto-vacia {
+                position: absolute;
+                inset: 0;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 6rem;
+            }
 
-    /* --- Columna derecha: INFORMACIÓN --- */
-    .fm-info {
-        display: flex;
-        flex-direction: column;
-        min-width: 0;
-        padding: 40px 44px 32px;
-    }
+            /* --- Columna derecha: INFORMACIÓN --- */
+            .fm-info {
+                display: flex;
+                flex-direction: column;
+                min-width: 0;
+                padding: 40px 44px 32px;
+            }
 
-    .fm-nombre {
-        margin: 0 44px 10px 0;
-        font-family: 'Quicksand', sans-serif;
-        font-weight: 700;
-        font-size: 2rem;
-        color: var(--color-primario);
-    }
+            .fm-nombre {
+                margin: 0 44px 10px 0;
+                font-family: 'Quicksand', sans-serif;
+                font-weight: 700;
+                font-size: 2rem;
+                color: var(--color-primario);
+            }
 
-    .fm-descripcion { margin: 14px 0 20px; line-height: 1.55; }
+            .fm-descripcion {
+                margin: 14px 0 20px;
+                line-height: 1.55;
+            }
 
-    /* Ficha de datos: casillas suaves, 2 por fila */
-    .fm-datos {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 10px;
-        margin-bottom: 20px;
-    }
+            /* Ficha de datos: casillas suaves, 2 por fila */
+            .fm-datos {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 10px;
+                margin-bottom: 20px;
+            }
 
-    .fm-dato {
-        padding: 10px 14px;
-        border-radius: 14px;
-        background-color: var(--color-crema);
-    }
+            .fm-dato {
+                padding: 10px 14px;
+                border-radius: 14px;
+                background-color: var(--color-crema);
+            }
 
-    .fm-dato small { display: block; font-size: 0.75rem; color: #8a8494; }
-    .fm-dato strong { font-size: 0.98rem; }
+                .fm-dato small {
+                    display: block;
+                    font-size: 0.75rem;
+                    color: #8a8494;
+                }
 
-    .fm-cuidado {
-        margin-bottom: 20px;
-        padding: 16px 18px;
-        border-radius: 16px;
-        background-color: var(--color-menta);
-    }
+                .fm-dato strong {
+                    font-size: 0.98rem;
+                }
 
-    /* Botones: "margin-top: auto" los pega al fondo de la columna */
-    .fm-acciones {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 12px;
-        margin-top: auto;
-        padding-top: 8px;
-    }
+            .fm-cuidado {
+                margin-bottom: 20px;
+                padding: 16px 18px;
+                border-radius: 16px;
+                background-color: var(--color-menta);
+            }
 
-    .fm-btn-adoptar {
-        flex: 1 1 260px;
-        padding: 13px 24px;
-        font-size: 1.05rem;
-        box-shadow: 0 8px 20px rgba(217, 91, 145, 0.35);
-        transition: transform 0.15s ease, box-shadow 0.15s ease;
-    }
+            /* Botones: "margin-top: auto" los pega al fondo de la columna */
+            .fm-acciones {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 12px;
+                margin-top: auto;
+                padding-top: 8px;
+            }
 
-    .fm-btn-adoptar:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 12px 26px rgba(217, 91, 145, 0.45);
-    }
+            .fm-btn-adoptar {
+                flex: 1 1 260px;
+                padding: 13px 24px;
+                font-size: 1.05rem;
+                box-shadow: 0 8px 20px rgba(217, 91, 145, 0.35);
+                transition: transform 0.15s ease, box-shadow 0.15s ease;
+            }
 
-    /* Línea de abajo: "Ver página completa" a la izquierda, ayuda a la derecha */
-    .fm-extra {
-        display: flex;
-        flex-wrap: wrap;
-        align-items: center;
-        justify-content: space-between;
-        gap: 10px;
-        margin-top: 18px;
-        padding-top: 16px;
-        border-top: 1px solid var(--color-rosa-claro);
-    }
+                .fm-btn-adoptar:hover {
+                    transform: translateY(-2px);
+                    box-shadow: 0 12px 26px rgba(217, 91, 145, 0.45);
+                }
 
-    .fm-enlace {
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-        padding: 7px 16px;
-        border-radius: 50px;
-        border: 1px solid var(--color-rosa-claro);
-        background-color: #fff;
-        color: var(--color-primario);
-        font-family: 'Quicksand', sans-serif;
-        font-weight: 600;
-        font-size: 0.9rem;
-        text-decoration: none;
-        transition: background-color 0.15s ease, color 0.15s ease;
-    }
+            /* Línea de abajo: "Ver página completa" a la izquierda, ayuda a la derecha */
+            .fm-extra {
+                display: flex;
+                flex-wrap: wrap;
+                align-items: center;
+                justify-content: space-between;
+                gap: 10px;
+                margin-top: 18px;
+                padding-top: 16px;
+                border-top: 1px solid var(--color-rosa-claro);
+            }
 
-    .fm-enlace:hover { background-color: var(--color-primario); color: #fff; }
-    .fm-enlace span { transition: transform 0.15s ease; }
-    .fm-enlace:hover span { transform: translateX(4px); }
+            .fm-enlace {
+                display: inline-flex;
+                align-items: center;
+                gap: 6px;
+                padding: 7px 16px;
+                border-radius: 50px;
+                border: 1px solid var(--color-rosa-claro);
+                background-color: #fff;
+                color: var(--color-primario);
+                font-family: 'Quicksand', sans-serif;
+                font-weight: 600;
+                font-size: 0.9rem;
+                text-decoration: none;
+                transition: background-color 0.15s ease, color 0.15s ease;
+            }
 
-    .fm-ayuda { font-size: 0.85rem; color: #6c6677; }
-    .fm-ayuda a { color: var(--color-primario); font-weight: 600; }
+                .fm-enlace:hover {
+                    background-color: var(--color-primario);
+                    color: #fff;
+                }
 
-    /* Celular: la foto pasa ARRIBA y la información ABAJO */
-    @@media (max-width: 767px) {
-        .fm-grid { grid-template-columns: 1fr; }
-        .fm-foto { min-height: 300px; }
-        .fm-info { padding: 28px 22px 24px; }
-        .fm-nombre { font-size: 1.6rem; }
-    }
-</style>
+                .fm-enlace span {
+                    transition: transform 0.15s ease;
+                }
 
-@foreach (var m in listaMascotas)
-{
-    // Dirección del formulario de adopción de ESTA mascota. Se calcula una
-    // sola vez y se usa como "returnUrl" en los enlaces de login/registro.
-    var urlAdoptar = Url.Action("Crear", "Solicitudes", new { mascotaId = m.Id });
-    var emojiTipo = m.Tipo == EcommerceApp.Models.TipoMascota.Perro ? "🐶" : "🐱";
+                .fm-enlace:hover span {
+                    transform: translateX(4px);
+                }
 
-    <div class="modal fade fm-modal" id="modalMascota-@m.Id" tabindex="-1"
-         aria-labelledby="tituloMascota-@m.Id" aria-hidden="true">
-        @* modal-dialog-centered = aparece en el MEDIO de la pantalla.
+            .fm-ayuda {
+                font-size: 0.85rem;
+                color: #6c6677;
+            }
+
+                .fm-ayuda a {
+                    color: var(--color-primario);
+                    font-weight: 600;
+                }
+
+            /* Celular: la foto pasa ARRIBA y la información ABAJO */
+            @@media (max-width: 767px) {
+                .fm-grid {
+                    grid-template-columns: 1fr;
+                }
+
+                .fm-foto {
+                    min-height: 300px;
+                }
+
+                .fm-info {
+                    padding: 28px 22px 24px;
+                }
+
+                .fm-nombre {
+                    font-size: 1.6rem;
+                }
+            }
+    </style>
+
+    @foreach (var m in listaMascotas)
+    {
+        // Dirección del formulario de adopción de ESTA mascota. Se calcula una
+        // sola vez y se usa como "returnUrl" en los enlaces de login/registro.
+        var urlAdoptar = Url.Action("Crear", "Solicitudes", new { mascotaId = m.Id });
+        var emojiTipo = m.Tipo == EcommerceApp.Models.TipoMascota.Perro ? "🐶" : "🐱";
+
+        <div class="modal fade fm-modal" id="modalMascota-@m.Id" tabindex="-1"
+             aria-labelledby="tituloMascota-@m.Id" aria-hidden="true">
+            @* modal-dialog-centered = aparece en el MEDIO de la pantalla.
            modal-dialog-scrollable = si la info es larga, scrollea por dentro. *@
-        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
-            <div class="modal-content">
+            <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+                <div class="modal-content">
 
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
 
-                <div class="modal-body p-0">
-                    <div class="fm-grid">
+                    <div class="modal-body p-0">
+                        <div class="fm-grid">
 
-                        @* ============ IZQUIERDA: FOTO ============ *@
-                        <div class="fm-foto">
-                            @if (!string.IsNullOrEmpty(m.FotoUrl))
-                            {
-                                <img src="@m.FotoUrl" alt="Foto de @m.Nombre" />
-                            }
-                            else
-                            {
-                                <div class="fm-foto-vacia">@emojiTipo</div>
-                            }
-                        </div>
-
-                        @* ============ DERECHA: INFORMACIÓN ============ *@
-                        <div class="fm-info">
-                            <h3 id="tituloMascota-@m.Id" class="fm-nombre">@m.Nombre</h3>
-
-                            @* Estados de salud como pastillas de colores *@
-                            <div>
-                                @foreach (var estado in m.EstadosSalud)
+                            @* ============ IZQUIERDA: FOTO ============ *@
+                            <div class="fm-foto">
+                                @if (!string.IsNullOrEmpty(m.FotoUrl))
                                 {
-                                    <span class="badge-estado @estado.ToLower()"
-                                          style="position:static;display:inline-block;margin:0 6px 4px 0;">@estado</span>
+                                    <img src="@m.FotoUrl" alt="Foto de @m.Nombre" />
+                                }
+                                else
+                                {
+                                    <div class="fm-foto-vacia">@emojiTipo</div>
                                 }
                             </div>
 
-                            <p class="fm-descripcion">@m.Descripcion</p>
+                            @* ============ DERECHA: INFORMACIÓN ============ *@
+                            <div class="fm-info">
+                                <h3 id="tituloMascota-@m.Id" class="fm-nombre">@m.Nombre</h3>
 
-                            @* Ficha rápida en casillas *@
-                            <div class="fm-datos">
-                                <div class="fm-dato"><small>Tipo</small><strong>@emojiTipo @m.Tipo</strong></div>
-                                <div class="fm-dato"><small>Sexo</small><strong>@m.Sexo</strong></div>
-                                <div class="fm-dato"><small>Edad</small><strong>@m.Edad</strong></div>
-                                <div class="fm-dato"><small>Color</small><strong>@(string.IsNullOrEmpty(m.Color) ? "No especificado" : m.Color)</strong></div>
-                                <div class="fm-dato"><small>Raza</small><strong>@(string.IsNullOrEmpty(m.Raza) ? "No especificada" : m.Raza)</strong></div>
-                                <div class="fm-dato"><small>Ubicación</small><strong>📍 @m.Ubicacion</strong></div>
-                            </div>
-
-                            @* Información de cuidado: visible para cualquiera (solo banderas
-                               y un resumen general, sin el detalle clínico interno). *@
-                            @if (m.EnTratamiento || m.TieneEnfermedadBase || m.RequiereCuidadosLargoPlazo)
-                            {
-                                <div class="fm-cuidado">
-                                    <h6 class="mb-2">💊 Información de cuidado</h6>
-                                    <ul class="mb-2 small">
-                                        @if (m.EnTratamiento) { <li>Actualmente está en tratamiento</li> }
-                                        @if (m.TieneEnfermedadBase) { <li>Tiene una enfermedad de base</li> }
-                                        @if (m.RequiereCuidadosLargoPlazo) { <li>Necesita cuidados a largo plazo / de por vida</li> }
-                                    </ul>
-                                    @if (!string.IsNullOrEmpty(m.ResumenCuidadosAdoptante))
+                                @* Estados de salud como pastillas de colores *@
+                                <div>
+                                    @foreach (var estado in m.EstadosSalud)
                                     {
-                                        <p class="mb-0 fst-italic small">"@m.ResumenCuidadosAdoptante"</p>
+                                        <span class="badge-estado @estado.ToLower()"
+                                              style="position:static;display:inline-block;margin:0 6px 4px 0;">@estado</span>
                                     }
                                 </div>
-                            }
 
-                            @* Información interna: SOLO se genera en el HTML si quien mira
+                                <p class="fm-descripcion">@m.Descripcion</p>
+
+                                @* Ficha rápida en casillas *@
+                                <div class="fm-datos">
+                                    <div class="fm-dato"><small>Tipo</small><strong>@emojiTipo @m.Tipo</strong></div>
+                                    <div class="fm-dato"><small>Sexo</small><strong>@m.Sexo</strong></div>
+                                    <div class="fm-dato"><small>Edad</small><strong>@m.Edad</strong></div>
+                                    <div class="fm-dato"><small>Color</small><strong>@(string.IsNullOrEmpty(m.Color) ? "No especificado" : m.Color)</strong></div>
+                                    <div class="fm-dato"><small>Raza</small><strong>@(string.IsNullOrEmpty(m.Raza) ? "No especificada" : m.Raza)</strong></div>
+                                    <div class="fm-dato"><small>Ubicación</small><strong>📍 @m.Ubicacion</strong></div>
+                                </div>
+
+                                @* Información de cuidado: visible para cualquiera (solo banderas
+                               y un resumen general, sin el detalle clínico interno). *@
+                                @if (m.EnTratamiento || m.TieneEnfermedadBase || m.RequiereCuidadosLargoPlazo)
+                                {
+                                    <div class="fm-cuidado">
+                                        <h6 class="mb-2">💊 Información de cuidado</h6>
+                                        <ul class="mb-2 small">
+                                            @if (m.EnTratamiento)
+                                            {
+                                                <li>Actualmente está en tratamiento</li>
+                                            }
+                                            @if (m.TieneEnfermedadBase)
+                                            {
+                                                <li>Tiene una enfermedad de base</li>
+                                            }
+                                            @if (m.RequiereCuidadosLargoPlazo)
+                                            {
+                                                <li>Necesita cuidados a largo plazo / de por vida</li>
+                                            }
+                                        </ul>
+                                        @if (!string.IsNullOrEmpty(m.ResumenCuidadosAdoptante))
+                                        {
+                                            <p class="mb-0 fst-italic small">"@m.ResumenCuidadosAdoptante"</p>
+                                        }
+                                    </div>
+                                }
+
+                                @* Información interna: SOLO se genera en el HTML si quien mira
                                tiene el rol Zoonosis. A cualquier otra persona ni siquiera
                                le llega al navegador. *@
-                            @if (User.IsInRole("Zoonosis"))
-                            {
-                                <div class="p-3 mb-3 border border-warning rounded-3">
-                                    <h6 class="mb-2">🔒 Información interna (solo Zoonosis)</h6>
-                                    <p class="mb-1 small"><strong>Condición en la que llegó:</strong> @(m.CondicionLlegada ?? "No registrada")</p>
-                                    <p class="mb-0 small"><strong>Tratamiento a aplicar:</strong> @(m.TratamientoAdministrativo ?? "No registrado")</p>
-                                </div>
-                            }
+                                @if (User.IsInRole("Zoonosis"))
+                                {
+                                    <div class="p-3 mb-3 border border-warning rounded-3">
+                                        <h6 class="mb-2">🔒 Información interna (solo Zoonosis)</h6>
+                                        <p class="mb-1 small"><strong>Condición en la que llegó:</strong> @(m.CondicionLlegada ?? "No registrada")</p>
+                                        <p class="mb-0 small"><strong>Tratamiento a aplicar:</strong> @(m.TratamientoAdministrativo ?? "No registrado")</p>
+                                    </div>
+                                }
 
-                            @* ---------- Botones: ADOPTAR + CERRAR ----------
+                                @* ---------- Botones: ADOPTAR + CERRAR ----------
                                - Adoptante con sesión: va directo al formulario de adopción.
                                - Sin sesión: va al login (con "returnUrl" para volver al
                                  formulario de esta mascota).
                                - Zoonosis / Veterinario: no ven "Adoptar" (no adoptan). *@
-                            <div class="fm-acciones">
-                                @if (User.Identity!.IsAuthenticated && User.IsInRole("Adoptante"))
-                                {
-                                    <a asp-controller="Solicitudes" asp-action="Crear" asp-route-mascotaId="@m.Id"
-                                       class="btn btn-adoptapatitas-secundario fm-btn-adoptar">💜 Quiero adoptar a @m.Nombre</a>
-                                }
-                                else if (!User.Identity!.IsAuthenticated)
-                                {
-                                    <a asp-controller="Account" asp-action="Login" asp-route-returnUrl="@urlAdoptar"
-                                       class="btn btn-adoptapatitas-secundario fm-btn-adoptar">💜 Inicia sesión para adoptar</a>
-                                }
+                                <div class="fm-acciones">
+                                    @if (User.Identity!.IsAuthenticated && User.IsInRole("Adoptante"))
+                                    {
+                                        <a asp-controller="Solicitudes" asp-action="Crear" asp-route-mascotaId="@m.Id"
+                                           class="btn btn-adoptapatitas-secundario fm-btn-adoptar">💜 Quiero adoptar a @m.Nombre</a>
+                                    }
+                                    else if (!User.Identity!.IsAuthenticated)
+                                    {
+                                        <a asp-controller="Account" asp-action="Login" asp-route-returnUrl="@urlAdoptar"
+                                           class="btn btn-adoptapatitas-secundario fm-btn-adoptar">💜 Inicia sesión para adoptar</a>
+                                    }
 
-                                @if (User.IsInRole("Zoonosis"))
-                                {
-                                    <a asp-action="Edit" asp-route-id="@m.Id" class="btn btn-adoptapatitas-outline">Editar</a>
-                                }
+                                    @if (User.IsInRole("Zoonosis"))
+                                    {
+                                        <a asp-action="Edit" asp-route-id="@m.Id" class="btn btn-adoptapatitas-outline">Editar</a>
+                                    }
 
-                                <button type="button" class="btn btn-adoptapatitas-outline" data-bs-dismiss="modal">Cerrar</button>
-                            </div>
+                                    <button type="button" class="btn btn-adoptapatitas-outline" data-bs-dismiss="modal">Cerrar</button>
+                                </div>
 
-                            @* Línea de abajo: enlace a la página completa (por si se quiere
+                                @* Línea de abajo: enlace a la página completa (por si se quiere
                                compartir el link o Zoonosis necesita "Eliminar") y, para quien
                                no tiene sesión, acceso rápido a "Crear cuenta". *@
-                            <div class="fm-extra">
-                                <a asp-action="Details" asp-route-id="@m.Id" class="fm-enlace">
-                                    Ver página completa <span aria-hidden="true">→</span>
-                                </a>
+                                <div class="fm-extra">
+                                    <a asp-action="Details" asp-route-id="@m.Id" class="fm-enlace">
+                                        Ver página completa <span aria-hidden="true">→</span>
+                                    </a>
 
-                                @if (!User.Identity!.IsAuthenticated)
-                                {
-                                    <span class="fm-ayuda">
-                                        ¿Aún no tienes cuenta?
-                                        <a asp-controller="Account" asp-action="Register" asp-route-returnUrl="@urlAdoptar">Crear cuenta</a>
-                                    </span>
-                                }
+                                    @if (!User.Identity!.IsAuthenticated)
+                                    {
+                                        <span class="fm-ayuda">
+                                            ¿Aún no tienes cuenta?
+                                            <a asp-controller="Account" asp-action="Register" asp-route-returnUrl="@urlAdoptar">Crear cuenta</a>
+                                        </span>
+                                    }
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-}
+    }
 
-@if (User.IsInRole("Zoonosis"))
-{
-    <div class="mt-4">
-        <a asp-action="Create" class="btn btn-adoptapatitas-primario">+ Registrar nueva mascota</a>
-    </div>
-}
+    @if (User.IsInRole("Zoonosis"))
+    {
+        <div class="mt-4">
+            <a asp-action="Create" class="btn btn-adoptapatitas-primario">+ Registrar nueva mascota</a>
+        </div>
+    }
 </div>
